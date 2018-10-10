@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
 using TwitchLib.Client;
@@ -18,6 +19,7 @@ namespace ZennMusic
         private static string[] ManagerNameList = { "producerzenn" };
         private static readonly Dictionary<string, Action<OnMessageReceivedArgs ,string[]>> Commands = 
             new Dictionary<string, Action<OnMessageReceivedArgs, string[]>>();
+        public static readonly List<string> SongList = new List<string>();
 
         public static void InitializeChatManager()
         {
@@ -34,7 +36,7 @@ namespace ZennMusic
             client.Connect();
         }
 
-        private static void InitializeCommand()
+        public static void InitializeCommand()
         {
             Commands["테스트"] = (arg, cmdarg) => client.SendMessage(arg.ChatMessage.Channel, "테스트!");
             Commands["조각"] = GetPiece;
@@ -67,7 +69,7 @@ namespace ZennMusic
 
             var pieceData = SheetManager.Sheet;
             var search = pieceData
-                .FirstOrDefault(x => (x[0] as string)?.Replace(" ", "") == args.ChatMessage.DisplayName);
+                .FirstOrDefault(x => (x[0] as string)?.Replace(" ", "") == commandArgs[2]);
 
             if (search is null)
             {
@@ -104,11 +106,65 @@ namespace ZennMusic
             var req = SheetManager.Service.Spreadsheets.Values.Update(body, spreadSheetId, range);
             req.ValueInputOption = SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.USERENTERED;
             req.Execute();
+
+            client.SendMessage(args.ChatMessage.Channel, $"{commandArgs[2]}님께 {(type == 1 ? "조각" : "신청곡")} 1개가 지급되었습니다.");
         }
 
         private static void RequestSong(OnMessageReceivedArgs args, string[] commandArgs)
         {
+            const string spreadSheetId = "1fndP3ddyqehCIn6vcpEiZOOixzYN6MX8puCnLdOIqgM";
 
+            var pieceData = SheetManager.Sheet;
+            var search = pieceData
+                .FirstOrDefault(x => (x[0] as string)?.Replace(" ", "") == args.ChatMessage.DisplayName);
+            var song = string.Join(" ", commandArgs.Skip(1));
+
+            if (search is null)
+            {
+                client.SendMessage(args.ChatMessage.Channel, "신청곡 조각 시트에 이름이 존재하지 않아요!");
+                return;
+            }
+
+            var songCount = 0;
+            var piece = 0;
+
+            if (search.Count > 1)
+                songCount = int.Parse(search[2] as string ?? "0");
+            if (search.Count > 2)
+                piece = int.Parse(search[1] as string ?? "0");
+
+            var body = new ValueRange
+            {
+                Values = new List<IList<object>>
+                {
+                    new List<object> {null, piece, songCount}
+                }
+            }; ;
+
+            if (songCount > 0)
+            {
+                body.Values[0][2] = (int)body.Values[0][2] - 1;
+                client.SendMessage(args.ChatMessage.Channel, $"티켓 한장을 소모하여 신청곡을 신청했어요! (곡명 : {song})");
+
+            }
+            else if (piece > 2)
+            {
+                body.Values[0][1] = (int)body.Values[0][1] - 3;
+                client.SendMessage(args.ChatMessage.Channel, $"신청곡 조각 3개를 소모하여 신청곡을 신청했어요! (곡명 : {song})");
+            }
+            else
+            {
+                client.SendMessage(args.ChatMessage.Channel, "조각이나 티켓이 부족합니다! =젠 조각 명령어로 보유 조각을 확인해주세요!");
+                return;
+            }
+
+            var range = $"시트1!B{pieceData.ToList().FindIndex(x => x[0] as string == args.ChatMessage.DisplayName) + 6}";
+
+            var req = SheetManager.Service.Spreadsheets.Values.Update(body, spreadSheetId, range);
+            req.ValueInputOption = SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.USERENTERED;
+            req.Execute();
+
+            SongList.Add(song);
         }
 
         private static void OnMessageReceived(object sender, OnMessageReceivedArgs args)

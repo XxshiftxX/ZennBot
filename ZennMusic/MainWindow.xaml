@@ -11,6 +11,6 @@
             <RowDefinition Height="50"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <TextBlock x:Name="MyConsole" Grid.Row="1" ScrollViewer.VerticalScrollBarVisibility="Visible"/>
+        <TextBox x:Name="MyConsole" Grid.Row="1" IsReadOnly="True"/>
     </Grid>
 </Window>
