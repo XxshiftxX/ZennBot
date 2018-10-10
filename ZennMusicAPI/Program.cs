@@ -72,7 +72,7 @@ namespace ZennMusicAPI
             IList<IList<Object>> values = response.Values;
             if (values != null && values.Count > 0)
             {
-                Console.WriteLine("Name, Major");
+                Console.WriteLine(@"Name, Major");
                 foreach (var row in values)
                 {
                     // Print columns A and E, which correspond to indices 0 and 4.
@@ -82,7 +82,7 @@ namespace ZennMusicAPI
             }
             else
             {
-                Console.WriteLine("No data found.");
+                Console.WriteLine(@"No data found.");
             }
         }
     }
@@ -125,18 +125,18 @@ namespace ZennMusicAPI
 
         private void OnConnected(object sender, OnConnectedArgs e)
         {
-            Console.WriteLine($"Connected to {e.AutoJoinChannel}");
+            Console.WriteLine($@"Connected to {e.AutoJoinChannel}");
         }
         private void OnJoinedChannel(object sender, OnJoinedChannelArgs e)
         {
-            Console.WriteLine("Hey guys! I am a bot connected via TwitchLib!");
+            Console.WriteLine(@"Hey guys! I am a bot connected via TwitchLib!");
             //client.SendMessage(e.Channel, "Hey guys! I am a bot connected via TwitchLib!");
         }
 
         private void OnMessageReceived(object sender, OnMessageReceivedArgs e)
         {
-            Console.WriteLine($"{e.ChatMessage.DisplayName}");
-            Console.WriteLine($"{e.ChatMessage.Message}");
+            Console.WriteLine($@"{e.ChatMessage.DisplayName}");
+            Console.WriteLine($@"{e.ChatMessage.Message}");
 
             if (e.ChatMessage.DisplayName == "Twipkr" && e.ChatMessage.Message.Contains("플래티넘 신청곡 티켓"))
             {
@@ -146,7 +146,7 @@ namespace ZennMusicAPI
             if (e.ChatMessage.Message.StartsWith("=젠 "))
             {
                 var args = e.ChatMessage.Message.Split().Skip(1).ToArray();
-                Console.WriteLine($"명령어! : {args[0]}");
+                Console.WriteLine($@"명령어! : {args[0]}");
                 if (args[0] == "테스트")
                     client.SendMessage(e.ChatMessage.Channel, "테스트!");
 
@@ -168,7 +168,7 @@ namespace ZennMusicAPI
 
             }
 
-            Console.WriteLine($"----");
+            Console.WriteLine($@"----");
 
         }
 
