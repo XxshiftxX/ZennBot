@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,10 +17,12 @@ namespace ZennMusic
     internal static class ChatManager
     {
         private static readonly TwitchClient client = new TwitchClient();
-        private static string[] ManagerNameList = { "producerzenn" };
+        private static string[] ManagerNameList = { "producerzenn", "qjfrntop" };
         private static readonly Dictionary<string, Action<OnMessageReceivedArgs ,string[]>> Commands = 
             new Dictionary<string, Action<OnMessageReceivedArgs, string[]>>();
-        public static readonly List<string> SongList = new List<string>();
+        public static readonly List<SongRequest> SongList = new List<SongRequest>();
+        public static bool IsEditingSongList = false;
+        public static bool IsRefreshingSongList = false;
 
         public static void InitializeChatManager()
         {
@@ -65,7 +68,17 @@ namespace ZennMusic
 
         private static void PayPiece(OnMessageReceivedArgs args, string[] commandArgs)
         {
-            const string spreadSheetId = "1fndP3ddyqehCIn6vcpEiZOOixzYN6MX8puCnLdOIqgM";
+            if (!ManagerNameList.Contains(args.ChatMessage.Username))
+            {
+                client.SendMessage(args.ChatMessage.Channel, "권한이 없습니다!");
+                return;
+            }
+
+            if (commandArgs.Length < 4)
+            {
+                client.SendMessage(args.ChatMessage.Channel, "잘못된 명령어 형식입니다. \"=젠 지급 (조각/곡) 닉네임\"의 형식으로 입력해주세요.");
+                return;
+            }
 
             var pieceData = SheetManager.Sheet;
             var search = pieceData
@@ -103,7 +116,7 @@ namespace ZennMusic
                 }
             };
 
-            var req = SheetManager.Service.Spreadsheets.Values.Update(body, spreadSheetId, range);
+            var req = SheetManager.Service.Spreadsheets.Values.Update(body, SheetManager.SpreadSheetId, range);
             req.ValueInputOption = SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.USERENTERED;
             req.Execute();
 
@@ -111,9 +124,7 @@ namespace ZennMusic
         }
 
         private static void RequestSong(OnMessageReceivedArgs args, string[] commandArgs)
-        {
-            const string spreadSheetId = "1fndP3ddyqehCIn6vcpEiZOOixzYN6MX8puCnLdOIqgM";
-
+        { 
             var pieceData = SheetManager.Sheet;
             var search = pieceData
                 .FirstOrDefault(x => (x[0] as string)?.Replace(" ", "") == args.ChatMessage.DisplayName);
@@ -122,6 +133,12 @@ namespace ZennMusic
             if (search is null)
             {
                 client.SendMessage(args.ChatMessage.Channel, "신청곡 조각 시트에 이름이 존재하지 않아요!");
+                return;
+            }
+
+            if (song.Replace(" ", string.Empty) == string.Empty)
+            {
+                client.SendMessage(args.ChatMessage.Channel, "신청곡의 이름을 입력해주세요!");
                 return;
             }
 
@@ -141,16 +158,21 @@ namespace ZennMusic
                 }
             }; ;
 
+            SongRequestPayment reqPayment;
             if (songCount > 0)
             {
                 body.Values[0][2] = (int)body.Values[0][2] - 1;
                 client.SendMessage(args.ChatMessage.Channel, $"티켓 한장을 소모하여 신청곡을 신청했어요! (곡명 : {song})");
+
+                reqPayment = SongRequestPayment.Ticket;
 
             }
             else if (piece > 2)
             {
                 body.Values[0][1] = (int)body.Values[0][1] - 3;
                 client.SendMessage(args.ChatMessage.Channel, $"신청곡 조각 3개를 소모하여 신청곡을 신청했어요! (곡명 : {song})");
+
+                reqPayment = SongRequestPayment.Piece;
             }
             else
             {
@@ -160,11 +182,11 @@ namespace ZennMusic
 
             var range = $"시트1!B{pieceData.ToList().FindIndex(x => x[0] as string == args.ChatMessage.DisplayName) + 6}";
 
-            var req = SheetManager.Service.Spreadsheets.Values.Update(body, spreadSheetId, range);
+            var req = SheetManager.Service.Spreadsheets.Values.Update(body, SheetManager.SpreadSheetId, range);
             req.ValueInputOption = SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.USERENTERED;
             req.Execute();
 
-            SongList.Add(song);
+            SongList.Add(new SongRequest(song, args.ChatMessage.DisplayName, reqPayment));
         }
 
         private static void OnMessageReceived(object sender, OnMessageReceivedArgs args)

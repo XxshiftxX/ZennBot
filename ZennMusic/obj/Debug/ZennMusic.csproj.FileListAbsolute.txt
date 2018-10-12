@@ -318,3 +318,13 @@ D:\Programing\CSharp\ZennBot\ZennMusic\obj\Debug\ZennMusic.csproj.CopyComplete
 D:\Programing\CSharp\ZennBot\ZennMusic\obj\Debug\ZennMusic.exe
 D:\Programing\CSharp\ZennBot\ZennMusic\obj\Debug\ZennMusic.pdb
 D:\Programing\CSharp\ZennBot\ZennMusic\bin\Debug\credentials.json
+D:\Programing\CSharp\ZennBot\ZennMusic\bin\Debug\ZennMusic.exe.manifest
+D:\Programing\CSharp\ZennBot\ZennMusic\bin\Debug\ZennMusic.application
+D:\Programing\CSharp\ZennBot\ZennMusic\bin\Debug\Cilador.Fody.dll
+D:\Programing\CSharp\ZennBot\ZennMusic\bin\Debug\Costura.dll
+D:\Programing\CSharp\ZennBot\ZennMusic\bin\Debug\Cilador.Fody.pdb
+D:\Programing\CSharp\ZennBot\ZennMusic\bin\Debug\Costura.xml
+D:\Programing\CSharp\ZennBot\ZennMusic\obj\Debug\SheetIdChangeDialog.g.cs
+D:\Programing\CSharp\ZennBot\ZennMusic\obj\Debug\SheetIdChangeDialog.baml
+D:\Programing\CSharp\ZennBot\ZennMusic\obj\Debug\ZennMusic.exe.manifest
+D:\Programing\CSharp\ZennBot\ZennMusic\obj\Debug\ZennMusic.application

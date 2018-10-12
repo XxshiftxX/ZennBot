@@ -16,10 +16,11 @@ namespace ZennMusic
     {
         private static readonly string[] Scopes = { SheetsService.Scope.Spreadsheets };
 
+        public static string SpreadSheetId = "1XuWOrZ1rA-7O5RAFKvJ__wIue4u_WTRyyOZpFXIP7Ko";
         public static SheetsService Service { get; private set; }
         public static IList<IList<object>> Sheet => LoadSheet();
 
-        private static void InitService()
+        public static void InitService()
         {
             UserCredential credential;
 
@@ -38,7 +39,8 @@ namespace ZennMusic
 
             Service = new SheetsService(new BaseClientService.Initializer()
             {
-                HttpClientInitializer = credential
+                HttpClientInitializer = credential,
+                ApplicationName = "Zenn Bot"
             });
         }
 
@@ -47,10 +49,9 @@ namespace ZennMusic
             if(Service is null)
                 InitService();
 
-            const string spreadSheetId = "1fndP3ddyqehCIn6vcpEiZOOixzYN6MX8puCnLdOIqgM";
             const string range = "시트1!B6:E";
 
-            var req = Service.Spreadsheets.Values.Get(spreadSheetId, range);
+            var req = Service.Spreadsheets.Values.Get(SpreadSheetId, range);
 
             var res = req.Execute().Values;
 

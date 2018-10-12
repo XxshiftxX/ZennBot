@@ -1,0 +1,20 @@
+﻿<Window x:Class="ZennMusic.SheetIdChangeDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ZennMusic"
+        mc:Ignorable="d"
+        Title="SheetIdChangeDialog" Height="350" Width="600" ResizeMode="NoResize">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="3*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <TextBox x:Name="MyBox" Margin="20"></TextBox>
+        <StackPanel Grid.Row="1" VerticalAlignment="Center" Orientation="Horizontal" HorizontalAlignment="Center">
+            <Button Grid.Row="1" Height="30" Width="50" Margin="10, 0" Click="Button_Click">확인</Button>
+            <Button Grid.Row="1" Height="30" Width="50" Margin="10, 0" Click="Button_Click_1">취소</Button>
+        </StackPanel>
+    </Grid>
+</Window>

@@ -1,20 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Collections.Concurrent;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
-using Google.Apis.Sheets.v4;
-using Google.Apis.Sheets.v4.Data;
 
 namespace ZennMusic
 {
@@ -27,12 +14,46 @@ namespace ZennMusic
         {
             InitializeComponent();
             
+            SheetManager.InitService();
             ChatManager.InitializeCommand();
             ChatManager.InitializeChatManager();
 
-            var ConsoleRefresh = new DispatcherTimer() { Interval = new TimeSpan(0, 0, 1)};
-            ConsoleRefresh.Tick += (e, arg) => MyConsole.Text = string.Join("\n", ChatManager.SongList);
+            SongRequestListBox.ItemsSource = ChatManager.SongList;
+
+            var ConsoleRefresh = new DispatcherTimer() { Interval = new TimeSpan(0, 0, 0, 0, 50) };
+            ConsoleRefresh.Tick += (e, arg) =>
+            {
+                if (ChatManager.IsEditingSongList) return;
+
+                ChatManager.IsRefreshingSongList = true;
+                SongRequestListBox.Items.Refresh();
+                ChatManager.IsRefreshingSongList = false;
+            };
+
+            var b = new BlockingCollection<string>();
+
             ConsoleRefresh.Start();
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            if (ChatManager.SongList.Count <= 0 || ChatManager.IsRefreshingSongList) return;
+
+            ChatManager.IsEditingSongList = true;
+            ChatManager.SongList.RemoveAt(0);
+            ChatManager.IsEditingSongList = false;
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e) => 
+            ChatManager.SongList.Add(new SongRequest(CustomInputBox.Text, "zenn", SongRequestPayment.Special));
+
+        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+        {
+            var dialog = new SheetIdChangeDialog();
+            if (dialog.ShowDialog() == true)
+            {
+                SheetManager.SpreadSheetId = dialog.ResponseText;
+            }
         }
     }
 }

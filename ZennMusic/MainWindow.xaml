@@ -10,7 +10,29 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
-        <TextBox x:Name="MyConsole" Grid.Row="1" IsReadOnly="True"/>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Margin="13, 10" Click="Button_Click">다음곡</Button>
+            <Button Margin="13, 10" Click="ButtonBase_OnClick">시트 주소 변경</Button>
+        </StackPanel>
+        <ListBox x:Name="SongRequestListBox" Grid.Row="1">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Vertical">
+                        <TextBlock Text="{Binding SongName}" FontSize="20"></TextBlock>
+                        <TextBlock Text="{Binding UserName}" FontSize="10"></TextBlock>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="150"/>
+            </Grid.ColumnDefinitions>
+            <TextBox x:Name="CustomInputBox" Margin="15, 5"></TextBox>
+            <Button Grid.Column="1" Margin="25, 10" Click="Button_Click_1">추가</Button>
+        </Grid>
     </Grid>
 </Window>
