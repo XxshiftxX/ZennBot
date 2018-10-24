@@ -168,3 +168,5 @@ D:\Programing\CSharp\ZennBot\ZennMusic\bin\Release\Cilador.Fody.dll
 D:\Programing\CSharp\ZennBot\ZennMusic\bin\Release\Costura.dll
 D:\Programing\CSharp\ZennBot\ZennMusic\bin\Release\Cilador.Fody.pdb
 D:\Programing\CSharp\ZennBot\ZennMusic\bin\Release\Costura.xml
+D:\Programing\CSharp\ZennBot\ZennMusic\obj\Release\MainWindowRenewal.g.cs
+D:\Programing\CSharp\ZennBot\ZennMusic\obj\Release\MainWindowRenewal.baml

@@ -328,3 +328,5 @@ D:\Programing\CSharp\ZennBot\ZennMusic\obj\Debug\SheetIdChangeDialog.g.cs
 D:\Programing\CSharp\ZennBot\ZennMusic\obj\Debug\SheetIdChangeDialog.baml
 D:\Programing\CSharp\ZennBot\ZennMusic\obj\Debug\ZennMusic.exe.manifest
 D:\Programing\CSharp\ZennBot\ZennMusic\obj\Debug\ZennMusic.application
+D:\Programing\CSharp\ZennBot\ZennMusic\obj\Debug\MainWindowRenewal.g.cs
+D:\Programing\CSharp\ZennBot\ZennMusic\obj\Debug\MainWindowRenewal.baml

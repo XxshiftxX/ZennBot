@@ -207,6 +207,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="ChatManager.cs" />
+    <Compile Include="MainWindowRenewal.xaml.cs">
+      <DependentUpon>MainWindowRenewal.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SheetIdChangeDialog.xaml.cs">
       <DependentUpon>SheetIdChangeDialog.xaml</DependentUpon>
     </Compile>
@@ -224,6 +227,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="MainWindowRenewal.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="SheetIdChangeDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

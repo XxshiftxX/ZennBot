@@ -6,33 +6,85 @@
         xmlns:local="clr-namespace:ZennMusic"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
+    <Window.Resources>
+        <Style x:Key="MyButton" TargetType="{x:Type Button}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Border.Background"
+                                        TargetName="ButtonBackground"
+                                        Value="#D0D0D0"></Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                        <Grid Width="{TemplateBinding Width}" Height="{TemplateBinding Height}" ClipToBounds="True">
+                            <Border x:Name="ButtonBackground" Background="White" CornerRadius="10"/>
+                            <ContentPresenter VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="50"/>
+            <RowDefinition Height="60"/>
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Margin="13, 10" Click="Button_Click">다음곡</Button>
-            <Button Margin="13, 10" Click="ButtonBase_OnClick">시트 주소 변경</Button>
+        <Border Background="#181818" Height="45" VerticalAlignment="Top" Grid.ColumnSpan="2">
+            <Border.Effect>
+                <DropShadowEffect Direction="0" ShadowDepth="0"></DropShadowEffect>
+            </Border.Effect>
+        </Border>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0, 0, 0, 5" Grid.ColumnSpan="2">
+            <Button Style="{StaticResource MyButton}" Margin="13, 10" Click="Button_Click">
+                <TextBlock FontFamily="NanumSquare" Margin="13, 0">
+                    다음곡
+                </TextBlock>
+            </Button>
+            <Button Style="{StaticResource MyButton}" Margin="13, 10" Click="ButtonBase_OnClick">
+                <TextBlock FontFamily="NanumSquare" Margin="13, 0">
+                    시트 주소 변경
+                </TextBlock>
+            </Button>
         </StackPanel>
-        <ListBox x:Name="SongRequestListBox" Grid.Row="1">
+        <ListBox x:Name="SongRequestListBox" Grid.Row="1" Background="Transparent" BorderThickness="0" Grid.ColumnSpan="2" HorizontalContentAlignment="Stretch">
+            <ListBox.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="삭제" Click="ItemMenu_Delete"/>
+                    <MenuItem Header="환불" Click="ItemMenu_Refund"/>
+                </ContextMenu>
+            </ListBox.ContextMenu>
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel Orientation="Vertical">
-                        <TextBlock Text="{Binding SongName}" FontSize="20"></TextBlock>
-                        <TextBlock Text="{Binding UserName}" FontSize="10"></TextBlock>
-                    </StackPanel>
+                    <Grid>
+                        <StackPanel Orientation="Vertical" Margin="10, 5">
+                            <TextBlock Text="{Binding SongName}" FontSize="23" FontFamily="NanumSquare" Margin="0, 2"></TextBlock>
+                            <TextBlock Text="{Binding UserName}" FontSize="12" FontFamily="NanumSquare"></TextBlock>
+                        </StackPanel>
+                    </Grid>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="2" Grid.ColumnSpan="2" Background="#181818" Margin="0, 8, 0, 0">
+            <Grid.Effect>
+                <DropShadowEffect Direction="0" ShadowDepth="0"/>
+            </Grid.Effect>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="150"/>
             </Grid.ColumnDefinitions>
-            <TextBox x:Name="CustomInputBox" Margin="15, 5"></TextBox>
-            <Button Grid.Column="1" Margin="25, 10" Click="Button_Click_1">추가</Button>
+            <TextBox x:Name="CustomInputBox" Margin="15, 5" 
+                     Background="Transparent" BorderThickness="0"
+                     VerticalAlignment="Center"
+                     FontSize="17"
+                     Foreground="White" KeyDown="CustomInputBox_KeyDown"
+                     ></TextBox>
+            <Rectangle Fill="White" Height="2" Margin="15, 5" VerticalAlignment="Bottom"></Rectangle>
+            <Button Style="{StaticResource MyButton}" Grid.Column="1" Margin="25, 10" Click="Button_Click_1">추가</Button>
         </Grid>
     </Grid>
 </Window>

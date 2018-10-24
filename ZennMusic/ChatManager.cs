@@ -1,26 +1,35 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
+using TwitchLib.Api;
+using TwitchLib.Api.Core.Enums;
+using TwitchLib.Api.ThirdParty;
+using TwitchLib.Api.V5;
+using TwitchLib.Api.V5.Models.Channels;
 using TwitchLib.Client;
 using TwitchLib.Client.Events;
 using TwitchLib.Client.Models;
+using TwitchLib.Client.Models.Internal;
 using TwitchLib.Communication.Events;
+using TwitchLib.PubSub;
 
 namespace ZennMusic
 {
     internal static class ChatManager
     {
         private static readonly TwitchClient client = new TwitchClient();
-        private static string[] ManagerNameList = { "producerzenn", "qjfrntop" };
+        private static readonly TwitchAPI api = new TwitchAPI();
+        private static string[] ManagerNameList = { "producerzenn", "qjfrntop", "freewing8101", "flashman0509", "mohamgwa1" };
         private static readonly Dictionary<string, Action<OnMessageReceivedArgs ,string[]>> Commands = 
             new Dictionary<string, Action<OnMessageReceivedArgs, string[]>>();
-        public static readonly List<SongRequest> SongList = new List<SongRequest>();
+        public static readonly ObservableCollection<SongRequest> SongList = new ObservableCollection<SongRequest>();
         public static bool IsEditingSongList = false;
         public static bool IsRefreshingSongList = false;
 
@@ -28,6 +37,10 @@ namespace ZennMusic
         {
             const string botId = "shiftbot1124";
             const string botToken = "aj8ah4035083xw27tg3d1cuon5yjnj";
+
+            api.Settings.ClientId = "h7q4ybkccbzq1189aymnz47u7zbnhb";
+            api.Settings.AccessToken = "zzm5178ugxhy8l5gm0owin18cuj2w6";
+            api.Settings.Secret = "z2he2py18w2hwt4xxocu81id779qoc";
 
             var credentials = new ConnectionCredentials(botId, botToken);
 
@@ -45,6 +58,27 @@ namespace ZennMusic
             Commands["조각"] = GetPiece;
             Commands["지급"] = PayPiece;
             Commands["신청"] = RequestSong;
+            
+            Commands["출석"] = async (arg, cmdarg) =>
+            {
+                /*
+                var channelFollowers = await api.V5.Channels.GetChannelFollowersAsync(arg.ChatMessage.RoomId);
+                //client.SendMessage(arg.ChatMessage.Channel, channelFollowers.Total.ToString());
+
+                var chan = await api.V5.Users.GetUserByNameAsync("sn400ja");
+                var chan2 = await api.V5.Users.GetUserByNameAsync("sjow195kk");
+                //var user = await api.V5.Users.CheckUserSubscriptionByChannelAsync(arg.ChatMessage.UserId, chan.Matches[0].Id, "zzm5178ugxhy8l5gm0owin18cuj2w6");
+                var subs = await api.V5.Channels.GetAllSubscribersAsync(arg.ChatMessage.UserId);
+                //client.SendMessage(arg.ChatMessage.Channel, chan.Id + chan.DisplayName);
+                client.SendMessage(arg.ChatMessage.Channel, subs[0].ToString());
+                //client.SendMessage(arg.ChatMessage.Channel, chan.Matches[0].DisplayName);
+                */
+                client.SendMessage(arg.ChatMessage.Channel, "모르겠당.... ㅎ 너무 어려운걸");
+            };
+
+            Commands["?"] = (arg, cmdarg) => client.SendMessage(arg.ChatMessage.Channel, "네???????????????????");
+
+            Commands["호두라이브"] = (arg, cmdarg) => client.SendMessage(arg.ChatMessage.Channel, "올거죠?");
         }
 
         private static void GetPiece(OnMessageReceivedArgs args, string[] commandArgs)
@@ -74,7 +108,7 @@ namespace ZennMusic
                 return;
             }
 
-            if (commandArgs.Length < 4)
+            if (commandArgs.Length < 3)
             {
                 client.SendMessage(args.ChatMessage.Channel, "잘못된 명령어 형식입니다. \"=젠 지급 (조각/곡) 닉네임\"의 형식으로 입력해주세요.");
                 return;
@@ -198,7 +232,7 @@ namespace ZennMusic
             if (!Commands.ContainsKey(commandArgs[0]))
                 client.SendMessage(args.ChatMessage.Channel, "존재하지 않는 명령어입니다!");
             else
-                Commands[commandArgs[0]](args, commandArgs);
+                System.Windows.Application.Current.Dispatcher.Invoke(() => Commands[commandArgs[0]](args, commandArgs));
         }
     }
 }
