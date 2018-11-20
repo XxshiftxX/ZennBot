@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
 using TwitchLib.Api;
+using TwitchLib.Api.Core.Enums;
 using TwitchLib.Client;
 using TwitchLib.Client.Events;
 using TwitchLib.Client.Models;
@@ -16,7 +18,7 @@ namespace ZennMusic
     {
         private static readonly TwitchClient client = new TwitchClient();
         private static readonly TwitchAPI api = new TwitchAPI();
-        private static string[] ManagerNameList = { "producerzenn", "qjfrntop", "freewing8101", "flashman0509", "mohamgwa1" };
+        private static readonly string[] ManagerNameList = { "producerzenn", "qjfrntop", "freewing8101", "flashman0509", "mohamgwa1" };
         private static readonly Dictionary<string, Action<OnMessageReceivedArgs ,string[]>> Commands = 
             new Dictionary<string, Action<OnMessageReceivedArgs, string[]>>();
         public static readonly ObservableCollection<SongRequest> SongList = new ObservableCollection<SongRequest>();
@@ -50,16 +52,33 @@ namespace ZennMusic
             Commands["조각"] = GetPiece;
             Commands["지급"] = PayPiece;
             Commands["신청"] = RequestSong;
-
-            /*
-            Commands["출석"] = async (arg, cmdarg) =>
+            
+            Commands["출석"] = (arg, cmdarg) =>
             {
-                var a = api.V5.Users.GetUserByNameAsync(arg.ChatMessage.Channel).Result.Matches.First().Id;
-                Task.Delay(500).Wait();
-                var c = await api.V5.Channels.GetChannelByIDAsync(a);
-                client.SendMessage(arg.ChatMessage.Channel, $"{arg.ChatMessage.UserId}");
+                if (!arg.ChatMessage.IsSubscriber) return;
+
+                var lev = arg.ChatMessage.Badges.First(x => x.Key == "subscriber").Value;
+                var temp = string.Empty;
+
+                switch (lev)
+                {
+                    case "0":
+                        temp = "노말";
+                        break;
+                    case "3":
+                        temp = "레어";
+                        break;
+                    case "6":
+                        temp = "스알";
+                        break;
+                    case "12":
+                        temp = "쓰알";
+                        break;
+                    default:
+                        break;
+                }
+                client.SendMessage(arg.ChatMessage.Channel, $"{temp} 등급 구독자입니다!");
             };
-            */
 
             Commands["호두라이브"] = (arg, cmdarg) => client.SendMessage(arg.ChatMessage.Channel, "재밌었다 ㅎㅎ");
             Commands["초코캠프"] = (arg, cmdarg) => client.SendMessage(arg.ChatMessage.Channel, "기대하고 있어요 ㅎㅎㅎ");
