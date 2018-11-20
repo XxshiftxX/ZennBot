@@ -104,7 +104,7 @@ namespace ZennMusic
                     return;
             }
 
-            var pieceData = SheetManager.Sheet;
+            var pieceData = SheetManager.PieceSheet;
             var search = pieceData
                 .FirstOrDefault(x => (x[0] as string)?.Replace(" ", "") == selectedItem.UserName);
 

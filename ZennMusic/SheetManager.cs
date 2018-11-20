@@ -18,7 +18,8 @@ namespace ZennMusic
 
         public static string SpreadSheetId = "1XuWOrZ1rA-7O5RAFKvJ__wIue4u_WTRyyOZpFXIP7Ko";
         public static SheetsService Service { get; private set; }
-        public static IList<IList<object>> Sheet => LoadSheet();
+        public static IList<IList<object>> PieceSheet => LoadPieceSheet();
+        public static IList<object> NullNameSheet => LoadNullNameSheet();
 
         public static void InitService()
         {
@@ -44,7 +45,7 @@ namespace ZennMusic
             });
         }
 
-        private static IList<IList<object>> LoadSheet()
+        private static IList<IList<object>> LoadPieceSheet()
         {
             if(Service is null)
                 InitService();
@@ -67,6 +68,22 @@ namespace ZennMusic
             }
 
             return res;
+        }
+
+
+        private static IList<object> LoadNullNameSheet()
+        {
+            if (Service is null)
+                InitService();
+
+            const string range = "시트1!J6:J";
+
+            var req = Service.Spreadsheets.Values.Get(SpreadSheetId, range);
+
+            var res = req.Execute().Values ?? new List<IList<Object>>();
+            var finalRes = res.Select(x => x.Count > 0 ? x[0] : string.Empty).ToList();
+
+            return finalRes;
         }
     }
 }

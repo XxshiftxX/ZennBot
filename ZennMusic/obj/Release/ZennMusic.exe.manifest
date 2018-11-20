@@ -1566,14 +1566,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="ZennMusic.exe" size="32192">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="ZennMusic.exe" size="33216">
       <assemblyIdentity name="ZennMusic" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>LwEdu9ruG9b3FJkZCkuUyfu1ulSkLEa1zfRSn3tkIl0=</dsig:DigestValue>
+        <dsig:DigestValue>gL3McWVbP/N16b5vZv3etAygdPy6H7z0oFtHqyrLf4E=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
