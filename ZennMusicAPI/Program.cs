@@ -24,8 +24,7 @@ namespace ZennMusicAPI
         
         static void Main(string[] args)
         {
-            var sheets = new Sheets();
-            var bot = new Bot(sheets.res);
+            var bot = new Bot();
         }
     }
 
@@ -130,7 +129,7 @@ namespace ZennMusicAPI
         private void OnJoinedChannel(object sender, OnJoinedChannelArgs e)
         {
             Console.WriteLine(@"Hey guys! I am a bot connected via TwitchLib!");
-            //client.SendMessage(e.Channel, "Hey guys! I am a bot connected via TwitchLib!");
+
         }
 
         private void OnMessageReceived(object sender, OnMessageReceivedArgs e)
@@ -140,9 +139,9 @@ namespace ZennMusicAPI
 
             if (e.ChatMessage.DisplayName == "Twipkr" && e.ChatMessage.Message.Contains("플래티넘 신청곡 티켓"))
             {
-                client.SendMessage(e.ChatMessage.Channel, $"{e.ChatMessage.Message}님... 머시써... 도네... 쩌러....");
+                //client.SendMessage(e.ChatMessage.Channel, $"{e.ChatMessage.Message}님... 머시써... 도네... 쩌러....");
             }
-
+            /*
             if (e.ChatMessage.Message.StartsWith("=젠 "))
             {
                 var args = e.ChatMessage.Message.Split().Skip(1).ToArray();
@@ -167,7 +166,7 @@ namespace ZennMusicAPI
                 }
 
             }
-
+            */
             Console.WriteLine($@"----");
 
         }

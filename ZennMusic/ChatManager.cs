@@ -1,24 +1,14 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Controls;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
 using TwitchLib.Api;
-using TwitchLib.Api.Core.Enums;
-using TwitchLib.Api.ThirdParty;
-using TwitchLib.Api.V5;
-using TwitchLib.Api.V5.Models.Channels;
 using TwitchLib.Client;
 using TwitchLib.Client.Events;
 using TwitchLib.Client.Models;
-using TwitchLib.Client.Models.Internal;
-using TwitchLib.Communication.Events;
-using TwitchLib.PubSub;
 
 namespace ZennMusic
 {
@@ -32,6 +22,7 @@ namespace ZennMusic
         public static readonly ObservableCollection<SongRequest> SongList = new ObservableCollection<SongRequest>();
         public static bool IsEditingSongList = false;
         public static bool IsRefreshingSongList = false;
+        public static bool IsRequestAvailable = false;
 
         public static void InitializeChatManager()
         {
@@ -49,36 +40,30 @@ namespace ZennMusic
             client.OnError += (sender, e) => Console.WriteLine($@"[ERROR] {e.Exception}");
             client.OnMessageReceived += OnMessageReceived;
 
+            client.OnGiftedSubscription += (e, arg) => client.SendMessage(arg.Channel, "저격이다! 읖드려!!!");
+
             client.Connect();
         }
 
         public static void InitializeCommand()
         {
-            Commands["테스트"] = (arg, cmdarg) => client.SendMessage(arg.ChatMessage.Channel, "테스트!");
             Commands["조각"] = GetPiece;
             Commands["지급"] = PayPiece;
             Commands["신청"] = RequestSong;
-            
+
+            /*
             Commands["출석"] = async (arg, cmdarg) =>
             {
-                /*
-                var channelFollowers = await api.V5.Channels.GetChannelFollowersAsync(arg.ChatMessage.RoomId);
-                //client.SendMessage(arg.ChatMessage.Channel, channelFollowers.Total.ToString());
-
-                var chan = await api.V5.Users.GetUserByNameAsync("sn400ja");
-                var chan2 = await api.V5.Users.GetUserByNameAsync("sjow195kk");
-                //var user = await api.V5.Users.CheckUserSubscriptionByChannelAsync(arg.ChatMessage.UserId, chan.Matches[0].Id, "zzm5178ugxhy8l5gm0owin18cuj2w6");
-                var subs = await api.V5.Channels.GetAllSubscribersAsync(arg.ChatMessage.UserId);
-                //client.SendMessage(arg.ChatMessage.Channel, chan.Id + chan.DisplayName);
-                client.SendMessage(arg.ChatMessage.Channel, subs[0].ToString());
-                //client.SendMessage(arg.ChatMessage.Channel, chan.Matches[0].DisplayName);
-                */
-                client.SendMessage(arg.ChatMessage.Channel, "모르겠당.... ㅎ 너무 어려운걸");
+                var a = api.V5.Users.GetUserByNameAsync(arg.ChatMessage.Channel).Result.Matches.First().Id;
+                Task.Delay(500).Wait();
+                var c = await api.V5.Channels.GetChannelByIDAsync(a);
+                client.SendMessage(arg.ChatMessage.Channel, $"{arg.ChatMessage.UserId}");
             };
+            */
 
-            Commands["?"] = (arg, cmdarg) => client.SendMessage(arg.ChatMessage.Channel, "네???????????????????");
-
-            Commands["호두라이브"] = (arg, cmdarg) => client.SendMessage(arg.ChatMessage.Channel, "올거죠?");
+            Commands["호두라이브"] = (arg, cmdarg) => client.SendMessage(arg.ChatMessage.Channel, "재밌었다 ㅎㅎ");
+            Commands["초코캠프"] = (arg, cmdarg) => client.SendMessage(arg.ChatMessage.Channel, "기대하고 있어요 ㅎㅎㅎ");
+            Commands["젠하"] = (arg, cmdarg) => client.SendMessage(arg.ChatMessage.Channel, "삐빅- 젠하트하-");
         }
 
         private static void GetPiece(OnMessageReceivedArgs args, string[] commandArgs)
@@ -110,7 +95,23 @@ namespace ZennMusic
 
             if (commandArgs.Length < 3)
             {
-                client.SendMessage(args.ChatMessage.Channel, "잘못된 명령어 형식입니다. \"=젠 지급 (조각/곡) 닉네임\"의 형식으로 입력해주세요.");
+                client.SendMessage(args.ChatMessage.Channel, "잘못된 명령어 형식입니다. \"=젠 지급 (조각/곡) 닉네임 [갯수]\"의 형식으로 입력해주세요.");
+                return;
+            }
+
+            var count = 1;
+
+            if (commandArgs.Length >= 4)
+            {
+                if (!int.TryParse(commandArgs[3], out count))
+                {
+                    client.SendMessage(args.ChatMessage.Channel, "갯수 입력 부분에는 숫자를 입력해주세요!");
+                }
+                else if (count < 1)
+                {
+                    client.SendMessage(args.ChatMessage.Channel, "왜 남의 조각을 뺏어가려고 하세요? ㅡㅡ 수량은 1 이상으로 입력하세요!");
+                }
+
                 return;
             }
 
@@ -134,13 +135,13 @@ namespace ZennMusic
                     type = 2;
                     break;
                 default:
-                    client.SendMessage(args.ChatMessage.Channel, "잘못된 명령어 형식입니다. \"=젠 지급 (조각/곡) 닉네임\"의 형식으로 입력해주세요.");
+                    client.SendMessage(args.ChatMessage.Channel, "잘못된 명령어 형식입니다. \"=젠 지급 (조각/곡) 닉네임 [갯수]\"의 형식으로 입력해주세요.");
                     return;
             }
 
             var range = $"시트1!B{pieceData.ToList().FindIndex(x => x[0] as string == commandArgs[2]) + 6}";
 
-            search[type] = int.Parse(search[type] as string ?? "0") + 1;
+            search[type] = int.Parse(search[type] as string ?? "0") + count;
 
             var body = new ValueRange
             {
@@ -154,11 +155,17 @@ namespace ZennMusic
             req.ValueInputOption = SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.USERENTERED;
             req.Execute();
 
-            client.SendMessage(args.ChatMessage.Channel, $"{commandArgs[2]}님께 {(type == 1 ? "조각" : "신청곡")} 1개가 지급되었습니다.");
+            client.SendMessage(args.ChatMessage.Channel, $"{commandArgs[2]}님께 {(type == 1 ? "조각" : "신청곡")} {count}개가 지급되었습니다.");
         }
 
         private static void RequestSong(OnMessageReceivedArgs args, string[] commandArgs)
-        { 
+        {
+            if (!IsRequestAvailable)
+            {
+                client.SendMessage(args.ChatMessage.Channel, "현재 신청곡을 받고있지 않아요!");
+                return;
+            }
+
             var pieceData = SheetManager.Sheet;
             var search = pieceData
                 .FirstOrDefault(x => (x[0] as string)?.Replace(" ", "") == args.ChatMessage.DisplayName);
@@ -175,6 +182,13 @@ namespace ZennMusic
                 client.SendMessage(args.ChatMessage.Channel, "신청곡의 이름을 입력해주세요!");
                 return;
             }
+
+            if (SongList.Reverse().Take(4).Any(x => x.UserName == args.ChatMessage.DisplayName))
+            {
+                client.SendMessage(args.ChatMessage.Channel, "아직 쿨타임이에요! 이전에 신청한 곡과 현재 신청하는 곡 사이에 최소 4개의 곡이 있어야 해요!");
+                return;
+            }
+                
 
             var songCount = 0;
             var piece = 0;

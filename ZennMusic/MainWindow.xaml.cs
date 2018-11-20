@@ -124,5 +124,15 @@ namespace ZennMusic
             req.ValueInputOption = SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.USERENTERED;
             req.Execute();
         }
+
+        private void ToggleButton_OnChecked(object sender, RoutedEventArgs e)
+        {
+            ChatManager.IsRequestAvailable = true;
+        }
+
+        private void ToggleButton_OnUnchecked(object sender, RoutedEventArgs e)
+        {
+            ChatManager.IsRequestAvailable = false;
+        }
     }
 }
