@@ -72,6 +72,7 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="50"/>
+            <RowDefinition Height="30"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="60"/>
         </Grid.RowDefinitions>
@@ -80,7 +81,7 @@
                 <DropShadowEffect Direction="0" ShadowDepth="0"></DropShadowEffect>
             </Border.Effect>
         </Border>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0, 0, 0, 5" Grid.ColumnSpan="2">
+        <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0, 0, 0, 5" Grid.ColumnSpan="2">
             <ToggleButton Style="{StaticResource MyToggleButton}" Margin="13, 10"
                           Checked="ToggleButton_OnChecked"
                           Unchecked="ToggleButton_OnUnchecked"
@@ -100,7 +101,10 @@
                 </TextBlock>
             </Button>
         </StackPanel>
-        <ListBox x:Name="SongRequestListBox" Grid.Row="1" Background="Transparent" BorderThickness="0" Grid.ColumnSpan="2" HorizontalContentAlignment="Stretch" Focusable="False">
+        <TextBlock x:Name="SongCountText" Margin="10, 0, 0, 0" Grid.Row="1" FontSize="15" VerticalAlignment="Center" FontFamily="NanumGothic">
+            현재 0개의 곡이 신청되었습니다.
+        </TextBlock>
+        <ListBox x:Name="SongRequestListBox" Grid.Row="2" Background="Transparent" BorderThickness="0" Grid.ColumnSpan="2" HorizontalContentAlignment="Stretch" Focusable="False">
             <ListBox.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="삭제" Click="ItemMenu_Delete"/>
@@ -118,7 +122,7 @@
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <Grid Grid.Row="2" Grid.ColumnSpan="2" Background="#181818" Margin="0, 8, 0, 0">
+        <Grid Grid.Row="3" Grid.ColumnSpan="2" Background="#181818" Margin="0, 8, 0, 0">
             <Grid.Effect>
                 <DropShadowEffect Direction="0" ShadowDepth="0"/>
             </Grid.Effect>

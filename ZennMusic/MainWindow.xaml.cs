@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Windows;
-using System.Windows.Data;
-using System.Windows.Threading;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
 
@@ -14,84 +10,115 @@ namespace ZennMusic
     /// <summary>
     /// MainWindow.xaml에 대한 상호 작용 논리
     /// </summary>
+    // ReSharper disable once InheritdocConsiderUsage
+    // ReSharper disable once UnusedMember.Global
+    // ReSharper disable once RedundantExtendsListEntry
     public partial class MainWindow : Window
     {
-        public static object SonglistLocker = new Object();
         public MainWindow()
         {
             InitializeComponent();
+            LogManager.ActivateLogger();
 
             AppDomain.CurrentDomain.UnhandledException += (e, arg) =>
             {
-                var path = @"D:\zennLog.txt";
-                if (!File.Exists(path))
-                    File.Create(path);
-
-                using (var tw = new StreamWriter(path, true))
-                {
-                    var ex = arg.ExceptionObject as Exception;
-                    tw.WriteLine(ex?.Message);
-                    tw.WriteLine();
-                    tw.WriteLine(ex?.StackTrace);
-                }
+                var ex = arg.ExceptionObject as Exception;
+                LogManager.Log(ex?.Message);
+                LogManager.Log(ex?.StackTrace, false);
             };
 
-            SheetManager.InitService();
+            SheetManager.InitializeSheet();
             ChatManager.InitializeCommand();
             ChatManager.InitializeChatManager();
+
+            ChatManager.SongList.CollectionChanged += (sender, e) => 
+                SongCountText.Text = $"현재 {ChatManager.SongList.Count}개의 곡이 신청되었습니다.";
 
             SongRequestListBox.ItemsSource = ChatManager.SongList;
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            if(ChatManager.SongList.Count > 0)
+            LogManager.Log("[Next Song] Button clicked");
+
+            if (ChatManager.SongList.Count > 0)
+            {
+                LogManager.Log(
+                    $"[Next Song] Data : {ChatManager.SongList[0].UserName}|{ChatManager.SongList[0].SongName}|{ChatManager.SongList[0].Payment}");
+                ChatManager.DeletedSongList.Add(ChatManager.SongList[0]);
                 ChatManager.SongList.RemoveAt(0);
+
+                if (ChatManager.DeletedSongList.Count > 50)
+                    ChatManager.DeletedSongList.RemoveAt(0);
+            }
+
+            LogManager.Log("[Next Song] Complete");
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
         {
-            lock (SonglistLocker)
-                if (CustomInputBox.Text != string.Empty)
-                {
-                    ChatManager.SongList.Add(new SongRequest(CustomInputBox.Text, "zenn", SongRequestPayment.Special));
-                    CustomInputBox.Text = string.Empty;
-                }
+            LogManager.Log("[Custom Song] Button clicked");
+
+            if (CustomInputBox.Text != string.Empty)
+            {
+                ChatManager.SongList.Add(new SongRequest(CustomInputBox.Text, "zenn", SongRequestPayment.Special));
+                LogManager.Log($"[Custom song] Data : {CustomInputBox.Text}");
+                CustomInputBox.Text = string.Empty;
+            }
+
+            LogManager.Log("[Custom song] Complete");
         }
 
         private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
         {
+            LogManager.Log("[Change Sheet] Button clicked");
             var dialog = new SheetIdChangeDialog();
             if (dialog.ShowDialog() == true)
             {
                 SheetManager.SpreadSheetId = dialog.ResponseText;
+                LogManager.Log($"[Change Sheet] Data : {dialog.ResponseText}");
             }
+            LogManager.Log("[Change Sheet] Complete");
         }
 
         private void CustomInputBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
         {
-            
+
         }
 
         private void ItemMenu_Delete(object sender, RoutedEventArgs e)
         {
+            LogManager.Log("[Delete Song] Button clicked");
+
             if (SongRequestListBox.SelectedIndex == -1) return;
 
-            var selectedItem = SongRequestListBox.SelectedItem as SongRequest;
+            if (!(SongRequestListBox.SelectedItem is SongRequest selectedItem))
+                return;
+
+            LogManager.Log(
+                $"[Delete Song] Data : {selectedItem.UserName}|{selectedItem.SongName}|{selectedItem.Payment}");
             ChatManager.SongList.Remove(selectedItem);
+
+            LogManager.Log("[Delete Song] Complete");
         }
 
         private void ItemMenu_Refund(object sender, RoutedEventArgs e)
         {
+            LogManager.Log("[Refund Song] Button clicked");
             if (SongRequestListBox.SelectedIndex == -1) return;
 
-            var selectedItem = SongRequestListBox.SelectedItem as SongRequest;
+            if (!(SongRequestListBox.SelectedItem is SongRequest selectedItem))
+                return;
+
+            LogManager.Log(
+                $"[Refund Song] Data : {selectedItem.UserName}|{selectedItem.SongName}|{selectedItem.Payment}");
+
             ChatManager.SongList.Remove(selectedItem);
 
             if (selectedItem.Payment == SongRequestPayment.Special)
                 return;
 
-            var type = 0;
+            int type;
             switch (selectedItem.Payment)
             {
                 case SongRequestPayment.Piece:
@@ -102,6 +129,8 @@ namespace ZennMusic
                     break;
                 case SongRequestPayment.Special:
                     return;
+                default:
+                    return;
             }
 
             var pieceData = SheetManager.PieceSheet;
@@ -109,6 +138,9 @@ namespace ZennMusic
                 .FirstOrDefault(x => (x[0] as string)?.Replace(" ", "") == selectedItem.UserName);
 
             var range = $"시트1!B{pieceData.ToList().FindIndex(x => x[0] as string == selectedItem.UserName) + 6}";
+
+            if (search == null)
+                return;
 
             search[type] = int.Parse(search[type] as string ?? "0") + (type == 1 ? 3 : 1);
 
@@ -122,16 +154,21 @@ namespace ZennMusic
 
             var req = SheetManager.Service.Spreadsheets.Values.Update(body, SheetManager.SpreadSheetId, range);
             req.ValueInputOption = SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.USERENTERED;
+            LogManager.Log("[Refund Song] Google docs api request executed");
             req.Execute();
+
+            LogManager.Log("[Refund Song] Complete");
         }
 
         private void ToggleButton_OnChecked(object sender, RoutedEventArgs e)
         {
+            LogManager.Log("[Request Toggle] On");
             ChatManager.IsRequestAvailable = true;
         }
 
         private void ToggleButton_OnUnchecked(object sender, RoutedEventArgs e)
         {
+            LogManager.Log("[Request Toggle] Off");
             ChatManager.IsRequestAvailable = false;
         }
     }

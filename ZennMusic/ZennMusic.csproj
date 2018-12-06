@@ -207,6 +207,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="ChatManager.cs" />
+    <Compile Include="LogManager.cs" />
     <Compile Include="MainWindowRenewal.xaml.cs">
       <DependentUpon>MainWindowRenewal.xaml</DependentUpon>
     </Compile>

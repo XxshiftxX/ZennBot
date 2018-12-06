@@ -6,9 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace ZennMusic
 {
@@ -21,8 +19,9 @@ namespace ZennMusic
         public static IList<IList<object>> PieceSheet => LoadPieceSheet();
         public static IList<object> NullNameSheet => LoadNullNameSheet();
 
-        public static void InitService()
+        public static void InitializeSheet()
         {
+            LogManager.Log("[Sheet System Initialize] Start");
             UserCredential credential;
 
             using (var stream = new FileStream("credentials.json", FileMode.Open, FileAccess.Read))
@@ -43,17 +42,20 @@ namespace ZennMusic
                 HttpClientInitializer = credential,
                 ApplicationName = "Zenn Bot"
             });
+            LogManager.Log("[Sheet System Initialize] Complete");
         }
 
         private static IList<IList<object>> LoadPieceSheet()
         {
+            LogManager.Log("[Load Sheet] Start");
+
             if(Service is null)
-                InitService();
+                InitializeSheet();
 
             const string range = "시트1!B6:E";
 
+            LogManager.Log("[Load Sheet] Google docs api execute");
             var req = Service.Spreadsheets.Values.Get(SpreadSheetId, range);
-
             var res = req.Execute().Values;
 
             foreach (var row in res)
@@ -67,22 +69,26 @@ namespace ZennMusic
                 }
             }
 
+            LogManager.Log("[Load Sheet] Complete");
             return res;
         }
 
-
         private static IList<object> LoadNullNameSheet()
         {
+            LogManager.Log("[Load Nullname Sheet] Start");
+
             if (Service is null)
-                InitService();
+                InitializeSheet();
 
             const string range = "시트1!J6:J";
 
+            LogManager.Log("[Load Nullname Sheet] Google docs api execute");
             var req = Service.Spreadsheets.Values.Get(SpreadSheetId, range);
 
-            var res = req.Execute().Values ?? new List<IList<Object>>();
+            var res = req.Execute().Values ?? new List<IList<object>>();
             var finalRes = res.Select(x => x.Count > 0 ? x[0] : string.Empty).ToList();
 
+            LogManager.Log("[Load Nullname Sheet] Complete");
             return finalRes;
         }
     }

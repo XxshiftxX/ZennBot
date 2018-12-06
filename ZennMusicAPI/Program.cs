@@ -35,7 +35,7 @@ namespace ZennMusicAPI
         public Sheets()
         {
             string[] Scopes = { SheetsService.Scope.SpreadsheetsReadonly };
-            var ApplicationName = "Google Sheets API .NET Quickstart";
+            var ApplicationName = "Zenn Bot";
 
             UserCredential credential;
 
