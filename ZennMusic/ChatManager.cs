@@ -61,12 +61,13 @@ namespace ZennMusic
             Commands["조각"] = GetPiece;
             Commands["지급"] = PayPiece;
             Commands["신청"] = RequestSong;
+            Commands["이스터"] = (arg, cmdarg) => { arg.ChatMessage.Channel.};
 
             Commands["출석"] = CheckAttendance;
             LogManager.Log("[Command System Initialize] Complete");
         }
 
-        private static void OnMessageReceived(object sender, OnMessageReceivedArgs args)
+        public static void OnMessageReceived(object sender, OnMessageReceivedArgs args)
         {
             LogManager.Log($"[Chat Event] ({args.ChatMessage.DisplayName}) {args.ChatMessage.Message}");
             if (args.ChatMessage.Message.Split()[0] == "=젠")

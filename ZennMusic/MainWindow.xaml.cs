@@ -1,9 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Drawing;
+using System.Threading;
 using System.Windows;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
+using TwitchLib.Client.Enums;
+using TwitchLib.Client.Enums.Internal;
+using TwitchLib.Client.Events;
+using TwitchLib.Client.Models;
+using TwitchLib.Client.Models.Internal;
 
 namespace ZennMusic
 {
@@ -19,7 +26,7 @@ namespace ZennMusic
         {
             InitializeComponent();
             LogManager.ActivateLogger();
-
+            
             AppDomain.CurrentDomain.UnhandledException += (e, arg) =>
             {
                 var ex = arg.ExceptionObject as Exception;
@@ -170,6 +177,42 @@ namespace ZennMusic
         {
             LogManager.Log("[Request Toggle] Off");
             ChatManager.IsRequestAvailable = false;
+        }
+
+        private void ButtonBase_OnClick2(object sender, RoutedEventArgs e)
+        {
+            for (var i = 1; i < 11; i++)
+            {
+                ChatManager.OnMessageReceived(null, new OnMessageReceivedArgs()
+                {
+                    ChatMessage = new ChatMessage(
+                        null,
+                        null,
+                        $"username{i}",
+                        $"Nick{i}",
+                        null,
+                        System.Drawing.Color.Aqua,
+                        new EmoteSet("produc1Keut", "produc1Keut"),
+                        "produc1Keut",
+                        UserType.Viewer,
+                        null,
+                        null,
+                        true,
+                        5,
+                        null,
+                        false,
+                        false,
+                        false,
+                        false,
+                        Noisy.NotSet,
+                        null,
+                        null,
+                        null,
+                        null,
+                        0,
+                        0)
+                });
+            }
         }
     }
 }

@@ -20,7 +20,7 @@ namespace ZennMusic
             if (!File.Exists($@"D:\ZennBotLog\ZennLog {dateString}.txt"))
                 File.Create($@"D:\ZennBotLog\ZennLog {dateString}.txt").Close();
             
-            logger = File.Open($@"D:\ZennBotLog\ZennLog {dateString}.txt", FileMode.Append, FileAccess.Write);
+            logger = File.Open($@"D:\ZennBotLog\ZennLog {dateString}.txt", FileMode.Append, FileAccess.Write, FileShare.Read);
 
             Log("------------ < LOGGING START > ------------");
         }
@@ -31,6 +31,7 @@ namespace ZennMusic
             {
                 var header = Encoding.UTF8.GetBytes($"[{CurrentTimeData}] ");
                 logger.Write(header, 0, header.Length);
+                logger.Flush();
             }
 
             var messageBytes = Encoding.UTF8.GetBytes(message + "\n");

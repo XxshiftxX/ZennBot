@@ -68,6 +68,9 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        <Style x:Key="MyFont">
+            <Setter Property="TextElement.FontFamily" Value="NanumSquareRound"/>
+        </Style>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -86,7 +89,7 @@
                           Checked="ToggleButton_OnChecked"
                           Unchecked="ToggleButton_OnUnchecked"
                           Focusable="False">
-                <TextBlock FontFamily="NanumSquare" Margin="13, 0">
+                <TextBlock Style="{StaticResource MyFont}" FontFamily="NanumSquare" Margin="13, 0">
                     곡 신청 활성화
                 </TextBlock>
             </ToggleButton>
@@ -98,6 +101,11 @@
             <Button Style="{StaticResource MyButton}" Margin="13, 10" Click="ButtonBase_OnClick">
                 <TextBlock FontFamily="NanumSquare" Margin="13, 0">
                     시트 주소 변경
+                </TextBlock>
+            </Button>
+            <Button Style="{StaticResource MyButton}" Margin="13, 10" Click="ButtonBase_OnClick2">
+                <TextBlock FontFamily="NanumSquare" Margin="13, 0">
+                    테스트!
                 </TextBlock>
             </Button>
         </StackPanel>
