@@ -45,7 +45,7 @@ namespace ZennMusic
 
             var credentials = new ConnectionCredentials(botId, botToken);
 
-            client.Initialize(credentials, "producerzenn");
+            client.Initialize(credentials, "qjfrntop");
 
             client.OnError += (sender, e) => Console.WriteLine($@"[ERROR] {e.Exception}");
             client.OnMessageReceived += OnMessageReceived;
@@ -61,7 +61,7 @@ namespace ZennMusic
             Commands["조각"] = GetPiece;
             Commands["지급"] = PayPiece;
             Commands["신청"] = RequestSong;
-            Commands["이스터"] = (arg, cmdarg) => { arg.ChatMessage.Channel.};
+            Commands["곡"] = ChackSong;
 
             Commands["출석"] = CheckAttendance;
             LogManager.Log("[Command System Initialize] Complete");
@@ -92,14 +92,13 @@ namespace ZennMusic
                 {
                     var tier = 0;
 
-                    if (args.ChatMessage.EmoteSet.Emotes.Exists(x => x.Name == "produc1Vwai"))
+                    if (args.ChatMessage.EmoteSet.Emotes.Exists(x => x.Name == "produc1Tricol"))
                         tier = 3;
-                    else if (args.ChatMessage.EmoteSet.Emotes.Exists(x => x.Name == "produc1Nano"))
+                    else if (args.ChatMessage.EmoteSet.Emotes.Exists(x => x.Name == "produc1Gold"))
                         tier = 2;
-                    else if (args.ChatMessage.EmoteSet.Emotes.Exists(x => x.Name == "produc1Keut"))
+                    else if (args.ChatMessage.EmoteSet.Emotes.Exists(x => x.Name == "produc1Ffffff"))
                     {
                         tier = 1;
-                        client.SendMessage(args.ChatMessage.Channel, "produc1Keut");
                     }
 
                     if (tier == 0)
@@ -327,7 +326,7 @@ namespace ZennMusic
             req.ValueInputOption = SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.USERENTERED;
             LogManager.Log("[Request Song] Google docs api executed");
             req.Execute();
-
+            LogManager.Log("[Request Song] Google docs api execute");
             SongList.Add(new SongRequest(song, args.ChatMessage.DisplayName, reqPayment));
             LogManager.Log("[Request Song] Complete");
         }
@@ -377,6 +376,19 @@ namespace ZennMusic
                 AttendanceList = null;
                 LogManager.Log("[Check Attendance] Complete");
             }
+        }
+
+        private static void ChackSong(OnMessageReceivedArgs arg, string[] cmdarg)
+        {
+            var request = SongList.FirstOrDefault(x => x.UserName == arg.ChatMessage.DisplayName);
+
+            if (request is null)
+            {
+                client.SendMessage(arg.ChatMessage.Channel, "아직 곡을 신청하지 않았습니다!");
+                return;
+            }
+
+            client.SendMessage(arg.ChatMessage.Channel, $"{arg.ChatMessage.DisplayName}님의 신청곡은 현재 {SongList.IndexOf(request) + 1}번째에 있습니다! ({request.SongName})");
         }
     }
 }

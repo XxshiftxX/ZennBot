@@ -21,6 +21,9 @@ namespace ZennMusic
 
         public static void InitializeSheet()
         {
+#if DEBUG
+            SpreadSheetId = "1fndP3ddyqehCIn6vcpEiZOOixzYN6MX8puCnLdOIqgM";
+#endif
             LogManager.Log("[Sheet System Initialize] Start");
             UserCredential credential;
 

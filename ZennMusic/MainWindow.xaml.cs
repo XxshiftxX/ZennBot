@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Drawing;
-using System.Threading;
 using System.Windows;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
 using TwitchLib.Client.Enums;
-using TwitchLib.Client.Enums.Internal;
 using TwitchLib.Client.Events;
 using TwitchLib.Client.Models;
-using TwitchLib.Client.Models.Internal;
+using System.Windows.Input;
+using System.Windows.Media;
 
 namespace ZennMusic
 {
@@ -42,6 +40,10 @@ namespace ZennMusic
                 SongCountText.Text = $"현재 {ChatManager.SongList.Count}개의 곡이 신청되었습니다.";
 
             SongRequestListBox.ItemsSource = ChatManager.SongList;
+
+            FontComboBox.SelectedIndex = FontComboBox.Items.Cast<FontFamily>()
+                                                           .ToList()
+                                                           .FindIndex(x => x.FamilyNames.Select(n => n.Value.ToLower().Replace(" ", "")).Contains("나눔고딕"));
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -213,6 +215,34 @@ namespace ZennMusic
                         0)
                 });
             }
+        }
+
+        private void Window_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if ((e.Key == Key.W || e.Key == Key.S) && (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
+            {
+                if (SongRequestListBox.SelectedItem == null || !(SongRequestListBox.SelectedItem is SongRequest request))
+                    return;
+
+                var isUp = e.Key == Key.W;
+
+                var index = ChatManager.SongList.IndexOf(request);
+                var newIndex = index + (isUp ? -1 : 1);
+
+                if (newIndex < 0) return;
+                if (newIndex >= ChatManager.SongList.Count) return;
+
+                ChatManager.SongList.Move(index, newIndex);
+            }
+            else if(e.Key == Key.Enter)
+            {
+                Button_Click_1(null, null);
+            }
+        }
+
+        private void FontComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+            Resources["MyFont"] = FontComboBox.SelectedItem as FontFamily;
         }
     }
 }

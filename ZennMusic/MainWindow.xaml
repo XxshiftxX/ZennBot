@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ZennMusic"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="450" Width="800" KeyDown="Window_KeyDown">
     <Window.Resources>
         <Style x:Key="MyButton" TargetType="{x:Type Button}">
             <Setter Property="Template">
@@ -68,9 +68,77 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        <Style x:Key="MyFont">
-            <Setter Property="TextElement.FontFamily" Value="NanumSquareRound"/>
+        <ControlTemplate x:Key="MyComboBox_TextBox" TargetType="{x:Type TextBox}">
+            <Border x:Name="PART_ContentHost"
+                    Focusable="False"/>
+        </ControlTemplate>
+        <Style x:Key="MyComboBox" TargetType="{x:Type ComboBox}">
+            <Setter Property="OverridesDefaultStyle" Value="True" />
+            <Setter Property="MinWidth" Value="120" />
+            <Setter Property="MinHeight" Value="20" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ComboBox}">
+                        <Grid>
+                            <VisualStateManager.VisualStateGroups>
+                                
+                            </VisualStateManager.VisualStateGroups>
+                            <ToggleButton x:Name="ToggleButton"
+                                          Style="{StaticResource MyToggleButton}"
+                                          Grid.Column="2"
+                                          Focusable="false"
+                                          ClickMode="Press"
+                                          IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"/>
+                            <ContentPresenter x:Name="ContentSite"
+                                              IsHitTestVisible="False"
+                                              Content="{TemplateBinding SelectionBoxItem}"
+                                              ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                              ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                              Margin="10,3,23,3"
+                                              VerticalAlignment="Center"
+                                              HorizontalAlignment="Left">
+                            </ContentPresenter>
+                            <TextBox x:Name="PART_EditableTextBox"
+                                     HorizontalAlignment="Left"
+                                     VerticalAlignment="Bottom"
+                                     Margin="3,3,23,3"
+                                     Focusable="True"
+                                     Background="Transparent"
+                                     Visibility="Hidden"
+                                     IsReadOnly="{TemplateBinding IsReadOnly}"></TextBox>
+                            <Popup x:Name="Popup"
+                                   Placement="Bottom"
+                                   IsOpen="{TemplateBinding IsDropDownOpen}"
+                                   AllowsTransparency="True"
+                                   Focusable="False"
+                                   PopupAnimation="Slide">
+                                <Grid x:Name="DropDown" SnapsToDevicePixels="True" MinWidth="{TemplateBinding ActualWidth}" MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                    <Border x:Name="DropDownBorder" BorderThickness="1" Background="White" Margin="0, -12, 0 0">
+                                    </Border>
+                                    <ScrollViewer Margin="4,6,4,6" SnapsToDevicePixels="True">
+                                        <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained" />
+                                    </ScrollViewer>
+                                </Grid>
+                            </Popup>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="HasItems" Value="false">
+                                <Setter TargetName="DropDownBorder" Property="MinHeight" Value="95" />
+                            </Trigger>
+                            <Trigger Property="IsGrouping" Value="true">
+                                <Setter Property="ScrollViewer.CanContentScroll" Value="false" />
+                            </Trigger>
+                            <Trigger SourceName="Popup" Property="AllowsTransparency" Value="true">
+                                <Setter TargetName="DropDownBorder" Property="CornerRadius" Value="4" />
+                                <Setter TargetName="DropDownBorder" Property="Margin" Value="0,2,0,0" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
+        <FontFamily x:Key="MyFont">NanumGothic</FontFamily>
+        <local:FontNameConverter x:Key="FConverter" />
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -84,12 +152,21 @@
                 <DropShadowEffect Direction="0" ShadowDepth="0"></DropShadowEffect>
             </Border.Effect>
         </Border>
+        <ComboBox x:Name="FontComboBox" Margin="13, 0, 0, 5" Width="220" Height="23" HorizontalAlignment="Left"
+                  Style="{StaticResource MyComboBox}"
+                  ItemsSource="{Binding Source={x:Static Fonts.SystemFontFamilies}}" SelectionChanged="FontComboBox_SelectionChanged">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding Path=FamilyNames, Converter={StaticResource FConverter}}" FontFamily="{Binding}"/>
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
         <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0, 0, 0, 5" Grid.ColumnSpan="2">
             <ToggleButton Style="{StaticResource MyToggleButton}" Margin="13, 10"
                           Checked="ToggleButton_OnChecked"
                           Unchecked="ToggleButton_OnUnchecked"
                           Focusable="False">
-                <TextBlock Style="{StaticResource MyFont}" FontFamily="NanumSquare" Margin="13, 0">
+                <TextBlock FontFamily="NanumSquare" Margin="13, 0">
                     곡 신청 활성화
                 </TextBlock>
             </ToggleButton>
@@ -103,28 +180,28 @@
                     시트 주소 변경
                 </TextBlock>
             </Button>
-            <Button Style="{StaticResource MyButton}" Margin="13, 10" Click="ButtonBase_OnClick2">
-                <TextBlock FontFamily="NanumSquare" Margin="13, 0">
-                    테스트!
-                </TextBlock>
-            </Button>
         </StackPanel>
         <TextBlock x:Name="SongCountText" Margin="10, 0, 0, 0" Grid.Row="1" FontSize="15" VerticalAlignment="Center" FontFamily="NanumGothic">
             현재 0개의 곡이 신청되었습니다.
         </TextBlock>
         <ListBox x:Name="SongRequestListBox" Grid.Row="2" Background="Transparent" BorderThickness="0" Grid.ColumnSpan="2" HorizontalContentAlignment="Stretch" Focusable="False">
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="Control">
+                    <Setter Property="KeyboardNavigation.ControlTabNavigation" Value="None" />
+                </Style>
+            </ListBox.ItemContainerStyle>
             <ListBox.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="삭제" Click="ItemMenu_Delete"/>
                     <MenuItem Header="환불" Click="ItemMenu_Refund"/>
                 </ContextMenu>
             </ListBox.ContextMenu>
-            <ListBox.ItemTemplate >
-                <DataTemplate >
-                    <Grid>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid Focusable="False">
                         <StackPanel Orientation="Vertical" Margin="10, 5">
-                            <TextBlock Text="{Binding SongName}" FontSize="23" FontFamily="NanumSquare" Margin="0, 2"></TextBlock>
-                            <TextBlock Text="{Binding UserName}" FontSize="12" FontFamily="NanumSquare"></TextBlock>
+                            <TextBlock Text="{Binding SongName}" FontSize="23" Margin="0, 2" FontFamily="{DynamicResource MyFont}"></TextBlock>
+                            <TextBlock Text="{Binding UserName}" FontSize="12" FontFamily="{DynamicResource MyFont}"></TextBlock>
                         </StackPanel>
                     </Grid>
                 </DataTemplate>

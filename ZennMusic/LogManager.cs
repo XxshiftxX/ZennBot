@@ -10,17 +10,19 @@ namespace ZennMusic
 
         private static string CurrentTimeData => DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:fff");
 
+        private const string LogDirectory = @"C:\ZennBotLog";
+
         public static void ActivateLogger()
         {
             var dateString = DateTime.Now.ToString("yyyy-MM-dd");
 
-            if (!Directory.Exists(@"D:\ZennBotLog"))
-                Directory.CreateDirectory(@"D:\ZennBotLog");
+            if (!Directory.Exists(LogDirectory))
+                Directory.CreateDirectory(LogDirectory);
 
-            if (!File.Exists($@"D:\ZennBotLog\ZennLog {dateString}.txt"))
-                File.Create($@"D:\ZennBotLog\ZennLog {dateString}.txt").Close();
+            if (!File.Exists($@"{LogDirectory}\ZennLog {dateString}.txt"))
+                File.Create($@"{LogDirectory}\ZennLog {dateString}.txt").Close();
             
-            logger = File.Open($@"D:\ZennBotLog\ZennLog {dateString}.txt", FileMode.Append, FileAccess.Write, FileShare.Read);
+            logger = File.Open($@"{LogDirectory}\ZennLog {dateString}.txt", FileMode.Append, FileAccess.Write, FileShare.Read);
 
             Log("------------ < LOGGING START > ------------");
         }
