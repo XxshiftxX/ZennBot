@@ -64,6 +64,8 @@ namespace ZennMusic
             Commands["곡"] = ChackSong;
 
             Commands["출석"] = CheckAttendance;
+            Commands["생일"] = IdolBirthday;
+
             LogManager.Log("[Command System Initialize] Complete");
         }
 
@@ -138,7 +140,7 @@ namespace ZennMusic
         private static void GetPiece(OnMessageReceivedArgs args, string[] commandArgs)
         {
             LogManager.Log("[Check Piece] Command started");
-            
+
             var pieceData = SheetManager.PieceSheet;
             var search = pieceData
                 .FirstOrDefault(x => (x[0] as string)?.Replace(" ", "") == args.ChatMessage.DisplayName);
@@ -214,7 +216,7 @@ namespace ZennMusic
                     type = 2;
                     break;
                 default:
-                    client.SendMessage(args.ChatMessage.Channel, 
+                    client.SendMessage(args.ChatMessage.Channel,
                         "잘못된 명령어 형식입니다. \"=젠 지급 (조각/곡) 닉네임 [갯수]\"의 형식으로 입력해주세요.");
                     return;
             }
@@ -299,7 +301,7 @@ namespace ZennMusic
             if (songTicket > 0)
             {
                 body.Values[0][2] = (int)body.Values[0][2] - 1;
-                client.SendMessage(args.ChatMessage.Channel, 
+                client.SendMessage(args.ChatMessage.Channel,
                     $"티켓 한장을 소모하여 신청곡을 신청했어요! (곡명 : {song})");
 
                 reqPayment = SongRequestPayment.Ticket;
@@ -308,14 +310,14 @@ namespace ZennMusic
             else if (songPiece > 2)
             {
                 body.Values[0][1] = (int)body.Values[0][1] - 3;
-                client.SendMessage(args.ChatMessage.Channel, 
+                client.SendMessage(args.ChatMessage.Channel,
                     $"신청곡 조각 3개를 소모하여 신청곡을 신청했어요! (곡명 : {song})");
 
                 reqPayment = SongRequestPayment.Piece;
             }
             else
             {
-                client.SendMessage(args.ChatMessage.Channel, 
+                client.SendMessage(args.ChatMessage.Channel,
                     "조각이나 티켓이 부족합니다! =젠 조각 명령어로 보유 조각을 확인해주세요!");
                 return;
             }
@@ -389,6 +391,807 @@ namespace ZennMusic
             }
 
             client.SendMessage(arg.ChatMessage.Channel, $"{arg.ChatMessage.DisplayName}님의 신청곡은 현재 {SongList.IndexOf(request) + 1}번째에 있습니다! ({request.SongName})");
+        }
+
+        private static void IdolBirthday(OnMessageReceivedArgs arg, string[] cmdarg)
+        {
+            String currDate = DateTime.Now.ToString("MMMM dd");
+            String[] dateParse = currDate.Split(' ');
+
+            switch (dateParse[0])
+            {
+                case "January":
+                    switch (dateParse[1])
+                    {
+                        case "1":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 됴묘지 카린, 타카후지 카코의 생일입니다!");
+                            break;
+                        case "2":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 후유미 쥰의 생일입니다!");
+                            break;
+                        case "3":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 노노무라 소라와 무라카미 토모에의 생일입니다!");
+                            break;
+                        case "6":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 미무라 카나코와 안자이 미야코의 생일입니다!");
+                            break;
+                        case "8":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 에밀리 스튜어트의 생일입니다!");
+                            break;
+                        case "10":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 세나 시오리의 생일입니다!");
+                            break;
+                        case "13":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 하마구치 아야메와 하자마 미치오의 생일입니다!");
+                            break;
+                        case "14":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 권하서의 생일입니다!");
+                            break;
+                        case "16":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 미츠미네 유이카의 생일입니다!");
+                            break;
+                        case "18":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 키타자와 시호의 생일입니다!");
+                            break;
+                        case "19":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 메어리 코크란의 생일입니다!");
+                            break;
+                        case "21":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 시죠 타카네와 후쿠야마 마이와 마츠야마 쿠미코의 생일입니다!");
+                            break;
+                        case "23":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 사이온지 코토카와 이예은의 생일입니다!");
+                            break;
+                        case "27":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 마카베 미즈키와 카미야 유키히로의 생일입니다!");
+                            break;
+                        case "28":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 오오타 유유의 생일입니다!");
+                            break;
+                        default:
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘 생일인 아이돌이 없습니다...");
+                            break;
+                    }
+                case "February":
+                    switch (dateParse[1])
+                    {
+                        case "2":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 타카죠 쿄지의 생일입니다!");
+                            break;
+                        case "3":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 니노미야 아스카의 생일입니다!");
+                            break;
+                        case "4":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 토쿠가와 마츠리와 시라유키 치요의 생일입니다!");
+                            break;
+                        case "6":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 에가미 츠바키의 생일입니다!");
+                            break;
+                        case "7":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 토고 아이의 생일입니다!");
+                            break;
+                        case "8":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 이치하라 니나의 생일입니다!");
+                            break;
+                        case "10":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 히메노 카논의 생일입니다!");
+                            break;
+                        case "11":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 아사노 후카의 생일입니다!");
+                            break;
+                        case "12":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 요코야마 나오의 생일입니다!");
+                            break;
+                        case "14":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 미야모토 프레데리카와 아이하라 유키노와 이쥬인 호쿠토의 생일입니다!");
+                            break;
+                        case "16":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 테라모토 유키카의 생일입니다!");
+                            break;
+                        case "17":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 키타가와 마히로의 생일입니다!");
+                            break;
+                        case "19":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 유사 코즈에의 생일입니다!");
+                            break;
+                        case "20":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 하코자키 세리카의 생일입니다!");
+                            break;
+                        case "22":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 마에카와 미쿠의 생일입니다!");
+                            break;
+                        case "23":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 텐도 테루의 생일입니다!");
+                            break;
+                        case "24":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 키류 츠카사와 소노다 치요코의 생일입니다!");
+                            break;
+                        case "25":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 키사라기 치하야와 미후네 미유와 츠키오카 코가네의 생일입니다!");
+                            break;
+                        case "26":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 쿠로사와 치아키의 생일입니다!");
+                            break;
+                        default:
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘 생일인 아이돌이 없습니다...");
+                            break;
+                    }
+                case "March":
+                    switch (dateParse[1])
+                    {
+                        case "1":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 한다 로코의 생일입니다!");
+                            break;
+                        case "3":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 이마이 카나와 아마가세 토우마의 생일입니다!");
+                            break;
+                        case "4":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 카자노 히오리의 생일입니다!");
+                            break;
+                        case "5":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 코세키 레이나의 생일입니다!");
+                            break;
+                        case "6":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 아리우라 칸나의 생일입니다!");
+                            break;
+                        case "7":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 미즈타니 에리와 카타기리 사나에와 아쿠노 히데오의 생일입니다!");
+                            break;
+                        case "9":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 쿠도 시노부의 생일입니다!");
+                            break;
+                        case "12":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 주니의 생일입니다!");
+                            break;
+                        case "13":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 호리 유코의 생일입니다!");
+                            break;
+                        case "16":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 야나세 미유키의 생일입니다!");
+                            break;
+                        case "18":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 나나오 유리코와 에토 미사키의 생일입니다!");
+                            break;
+                        case "19":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 나가토미 하스미의 생일입니다!");
+                            break;
+                        case "20":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 오오니시 유리코와 이수지의 생일입니다!");
+                            break;
+                        case "21":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 마츠오 치즈루와 허영주의 생일입니다!");
+                            break;
+                        case "22":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 사타케 미나코와 와타나베 미노리의 생일입니다!");
+                            break;
+                        case "23":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 나카노 유카와 이지원의 생일입니다!");
+                            break;
+                        case "25":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 타카츠키 야요이와 타카미네 노아와 오카무라 나오의 생일입니다!");
+                            break;
+                        case "27":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 사쿠라모리 카오리와 무라마츠 사쿠라의 생일입니다!");
+                            break;
+                        case "28":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 시라사카 코우메의 생일입니다!");
+                            break;
+                        case "30":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 후쿠다 노리코와 오오누마 쿠루미와 와카자토 하루나의 생일입니다!");
+                            break;
+                        default:
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘 생일인 아이돌이 없습니다...");
+                            break;
+                    }
+                //4월 까지 작업: 2019-03-01
+                case "April":
+                    switch (dateParse[1])
+                    {
+                        case "1":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 한다 로코의 생일입니다!");
+                            break;
+                        case "3":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 이마이 카나와 아마가세 토우마의 생일입니다!");
+                            break;
+                        case "4":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 카자노 히오리의 생일입니다!");
+                            break;
+                        case "5":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 코세키 레이나의 생일입니다!");
+                            break;
+                        case "6":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 아리우라 칸나의 생일입니다!");
+                            break;
+                        case "7":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 미즈타니 에리와 카타기리 사나에와 아쿠노 히데오의 생일입니다!");
+                            break;
+                        case "9":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 쿠도 시노부의 생일입니다!");
+                            break;
+                        case "12":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 주니의 생일입니다!");
+                            break;
+                        case "13":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 호리 유코의 생일입니다!");
+                            break;
+                        case "16":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 야나세 미유키의 생일입니다!");
+                            break;
+                        case "18":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 나나오 유리코와 에토 미사키의 생일입니다!");
+                            break;
+                        case "19":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 나가토미 하스미의 생일입니다!");
+                            break;
+                        case "20":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 오오니시 유리코와 이수지의 생일입니다!");
+                            break;
+                        case "21":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 마츠오 치즈루와 허영주의 생일입니다!");
+                            break;
+                        case "22":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 사타케 미나코와 와타나베 미노리의 생일입니다!");
+                            break;
+                        case "23":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 나카노 유카와 이지원의 생일입니다!");
+                            break;
+                        case "25":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 타카츠키 야요이와 타카미네 노아와 오카무라 나오의 생일입니다!");
+                            break;
+                        case "27":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 사쿠라모리 카오리와 무라마츠 사쿠라의 생일입니다!");
+                            break;
+                        case "28":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 시라사카 코우메의 생일입니다!");
+                            break;
+                        case "30":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 후쿠다 노리코와 오오누마 쿠루미와 와카자토 하루나의 생일입니다!");
+                            break;
+                        default:
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘 생일인 아이돌이 없습니다...");
+                            break;
+                    }
+                case "May":
+                    switch (dateParse[1])
+                    {
+                        case "1":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 한다 로코의 생일입니다!");
+                            break;
+                        case "3":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 이마이 카나와 아마가세 토우마의 생일입니다!");
+                            break;
+                        case "4":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 카자노 히오리의 생일입니다!");
+                            break;
+                        case "5":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 코세키 레이나의 생일입니다!");
+                            break;
+                        case "6":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 아리우라 칸나의 생일입니다!");
+                            break;
+                        case "7":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 미즈타니 에리와 카타기리 사나에와 아쿠노 히데오의 생일입니다!");
+                            break;
+                        case "9":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 쿠도 시노부의 생일입니다!");
+                            break;
+                        case "12":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 주니의 생일입니다!");
+                            break;
+                        case "13":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 호리 유코의 생일입니다!");
+                            break;
+                        case "16":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 야나세 미유키의 생일입니다!");
+                            break;
+                        case "18":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 나나오 유리코와 에토 미사키의 생일입니다!");
+                            break;
+                        case "19":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 나가토미 하스미의 생일입니다!");
+                            break;
+                        case "20":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 오오니시 유리코와 이수지의 생일입니다!");
+                            break;
+                        case "21":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 마츠오 치즈루와 허영주의 생일입니다!");
+                            break;
+                        case "22":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 사타케 미나코와 와타나베 미노리의 생일입니다!");
+                            break;
+                        case "23":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 나카노 유카와 이지원의 생일입니다!");
+                            break;
+                        case "25":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 타카츠키 야요이와 타카미네 노아와 오카무라 나오의 생일입니다!");
+                            break;
+                        case "27":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 사쿠라모리 카오리와 무라마츠 사쿠라의 생일입니다!");
+                            break;
+                        case "28":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 시라사카 코우메의 생일입니다!");
+                            break;
+                        case "30":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 후쿠다 노리코와 오오누마 쿠루미와 와카자토 하루나의 생일입니다!");
+                            break;
+                        default:
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘 생일인 아이돌이 없습니다...");
+                            break;
+                    }
+                case "June":
+                    switch (dateParse[1])
+                    {
+                        case "1":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 한다 로코의 생일입니다!");
+                            break;
+                        case "3":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 이마이 카나와 아마가세 토우마의 생일입니다!");
+                            break;
+                        case "4":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 카자노 히오리의 생일입니다!");
+                            break;
+                        case "5":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 코세키 레이나의 생일입니다!");
+                            break;
+                        case "6":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 아리우라 칸나의 생일입니다!");
+                            break;
+                        case "7":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 미즈타니 에리와 카타기리 사나에와 아쿠노 히데오의 생일입니다!");
+                            break;
+                        case "9":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 쿠도 시노부의 생일입니다!");
+                            break;
+                        case "12":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 주니의 생일입니다!");
+                            break;
+                        case "13":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 호리 유코의 생일입니다!");
+                            break;
+                        case "16":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 야나세 미유키의 생일입니다!");
+                            break;
+                        case "18":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 나나오 유리코와 에토 미사키의 생일입니다!");
+                            break;
+                        case "19":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 나가토미 하스미의 생일입니다!");
+                            break;
+                        case "20":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 오오니시 유리코와 이수지의 생일입니다!");
+                            break;
+                        case "21":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 마츠오 치즈루와 허영주의 생일입니다!");
+                            break;
+                        case "22":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 사타케 미나코와 와타나베 미노리의 생일입니다!");
+                            break;
+                        case "23":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 나카노 유카와 이지원의 생일입니다!");
+                            break;
+                        case "25":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 타카츠키 야요이와 타카미네 노아와 오카무라 나오의 생일입니다!");
+                            break;
+                        case "27":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 사쿠라모리 카오리와 무라마츠 사쿠라의 생일입니다!");
+                            break;
+                        case "28":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 시라사카 코우메의 생일입니다!");
+                            break;
+                        case "30":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 후쿠다 노리코와 오오누마 쿠루미와 와카자토 하루나의 생일입니다!");
+                            break;
+                        default:
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘 생일인 아이돌이 없습니다...");
+                            break;
+                    }
+                case "July":
+                    switch (dateParse[1])
+                    {
+                        case "1":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 한다 로코의 생일입니다!");
+                            break;
+                        case "3":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 이마이 카나와 아마가세 토우마의 생일입니다!");
+                            break;
+                        case "4":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 카자노 히오리의 생일입니다!");
+                            break;
+                        case "5":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 코세키 레이나의 생일입니다!");
+                            break;
+                        case "6":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 아리우라 칸나의 생일입니다!");
+                            break;
+                        case "7":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 미즈타니 에리와 카타기리 사나에와 아쿠노 히데오의 생일입니다!");
+                            break;
+                        case "9":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 쿠도 시노부의 생일입니다!");
+                            break;
+                        case "12":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 주니의 생일입니다!");
+                            break;
+                        case "13":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 호리 유코의 생일입니다!");
+                            break;
+                        case "16":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 야나세 미유키의 생일입니다!");
+                            break;
+                        case "18":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 나나오 유리코와 에토 미사키의 생일입니다!");
+                            break;
+                        case "19":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 나가토미 하스미의 생일입니다!");
+                            break;
+                        case "20":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 오오니시 유리코와 이수지의 생일입니다!");
+                            break;
+                        case "21":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 마츠오 치즈루와 허영주의 생일입니다!");
+                            break;
+                        case "22":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 사타케 미나코와 와타나베 미노리의 생일입니다!");
+                            break;
+                        case "23":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 나카노 유카와 이지원의 생일입니다!");
+                            break;
+                        case "25":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 타카츠키 야요이와 타카미네 노아와 오카무라 나오의 생일입니다!");
+                            break;
+                        case "27":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 사쿠라모리 카오리와 무라마츠 사쿠라의 생일입니다!");
+                            break;
+                        case "28":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 시라사카 코우메의 생일입니다!");
+                            break;
+                        case "30":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 후쿠다 노리코와 오오누마 쿠루미와 와카자토 하루나의 생일입니다!");
+                            break;
+                        default:
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘 생일인 아이돌이 없습니다...");
+                            break;
+                    }
+                case "August":
+                    switch (dateParse[1])
+                    {
+                        case "1":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 한다 로코의 생일입니다!");
+                            break;
+                        case "3":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 이마이 카나와 아마가세 토우마의 생일입니다!");
+                            break;
+                        case "4":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 카자노 히오리의 생일입니다!");
+                            break;
+                        case "5":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 코세키 레이나의 생일입니다!");
+                            break;
+                        case "6":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 아리우라 칸나의 생일입니다!");
+                            break;
+                        case "7":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 미즈타니 에리와 카타기리 사나에와 아쿠노 히데오의 생일입니다!");
+                            break;
+                        case "9":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 쿠도 시노부의 생일입니다!");
+                            break;
+                        case "12":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 주니의 생일입니다!");
+                            break;
+                        case "13":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 호리 유코의 생일입니다!");
+                            break;
+                        case "16":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 야나세 미유키의 생일입니다!");
+                            break;
+                        case "18":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 나나오 유리코와 에토 미사키의 생일입니다!");
+                            break;
+                        case "19":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 나가토미 하스미의 생일입니다!");
+                            break;
+                        case "20":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 오오니시 유리코와 이수지의 생일입니다!");
+                            break;
+                        case "21":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 마츠오 치즈루와 허영주의 생일입니다!");
+                            break;
+                        case "22":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 사타케 미나코와 와타나베 미노리의 생일입니다!");
+                            break;
+                        case "23":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 나카노 유카와 이지원의 생일입니다!");
+                            break;
+                        case "25":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 타카츠키 야요이와 타카미네 노아와 오카무라 나오의 생일입니다!");
+                            break;
+                        case "27":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 사쿠라모리 카오리와 무라마츠 사쿠라의 생일입니다!");
+                            break;
+                        case "28":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 시라사카 코우메의 생일입니다!");
+                            break;
+                        case "30":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 후쿠다 노리코와 오오누마 쿠루미와 와카자토 하루나의 생일입니다!");
+                            break;
+                        default:
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘 생일인 아이돌이 없습니다...");
+                            break;
+                    }
+                case "September":
+                    switch (dateParse[1])
+                    {
+                        case "1":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 한다 로코의 생일입니다!");
+                            break;
+                        case "3":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 이마이 카나와 아마가세 토우마의 생일입니다!");
+                            break;
+                        case "4":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 카자노 히오리의 생일입니다!");
+                            break;
+                        case "5":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 코세키 레이나의 생일입니다!");
+                            break;
+                        case "6":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 아리우라 칸나의 생일입니다!");
+                            break;
+                        case "7":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 미즈타니 에리와 카타기리 사나에와 아쿠노 히데오의 생일입니다!");
+                            break;
+                        case "9":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 쿠도 시노부의 생일입니다!");
+                            break;
+                        case "12":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 주니의 생일입니다!");
+                            break;
+                        case "13":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 호리 유코의 생일입니다!");
+                            break;
+                        case "16":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 야나세 미유키의 생일입니다!");
+                            break;
+                        case "18":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 나나오 유리코와 에토 미사키의 생일입니다!");
+                            break;
+                        case "19":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 나가토미 하스미의 생일입니다!");
+                            break;
+                        case "20":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 오오니시 유리코와 이수지의 생일입니다!");
+                            break;
+                        case "21":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 마츠오 치즈루와 허영주의 생일입니다!");
+                            break;
+                        case "22":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 사타케 미나코와 와타나베 미노리의 생일입니다!");
+                            break;
+                        case "23":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 나카노 유카와 이지원의 생일입니다!");
+                            break;
+                        case "25":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 타카츠키 야요이와 타카미네 노아와 오카무라 나오의 생일입니다!");
+                            break;
+                        case "27":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 사쿠라모리 카오리와 무라마츠 사쿠라의 생일입니다!");
+                            break;
+                        case "28":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 시라사카 코우메의 생일입니다!");
+                            break;
+                        case "30":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 후쿠다 노리코와 오오누마 쿠루미와 와카자토 하루나의 생일입니다!");
+                            break;
+                        default:
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘 생일인 아이돌이 없습니다...");
+                            break;
+                    }
+                case "October":
+                    switch (dateParse[1])
+                    {
+                        case "1":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 한다 로코의 생일입니다!");
+                            break;
+                        case "3":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 이마이 카나와 아마가세 토우마의 생일입니다!");
+                            break;
+                        case "4":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 카자노 히오리의 생일입니다!");
+                            break;
+                        case "5":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 코세키 레이나의 생일입니다!");
+                            break;
+                        case "6":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 아리우라 칸나의 생일입니다!");
+                            break;
+                        case "7":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 미즈타니 에리와 카타기리 사나에와 아쿠노 히데오의 생일입니다!");
+                            break;
+                        case "9":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 쿠도 시노부의 생일입니다!");
+                            break;
+                        case "12":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 주니의 생일입니다!");
+                            break;
+                        case "13":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 호리 유코의 생일입니다!");
+                            break;
+                        case "16":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 야나세 미유키의 생일입니다!");
+                            break;
+                        case "18":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 나나오 유리코와 에토 미사키의 생일입니다!");
+                            break;
+                        case "19":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 나가토미 하스미의 생일입니다!");
+                            break;
+                        case "20":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 오오니시 유리코와 이수지의 생일입니다!");
+                            break;
+                        case "21":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 마츠오 치즈루와 허영주의 생일입니다!");
+                            break;
+                        case "22":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 사타케 미나코와 와타나베 미노리의 생일입니다!");
+                            break;
+                        case "23":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 나카노 유카와 이지원의 생일입니다!");
+                            break;
+                        case "25":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 타카츠키 야요이와 타카미네 노아와 오카무라 나오의 생일입니다!");
+                            break;
+                        case "27":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 사쿠라모리 카오리와 무라마츠 사쿠라의 생일입니다!");
+                            break;
+                        case "28":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 시라사카 코우메의 생일입니다!");
+                            break;
+                        case "30":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 후쿠다 노리코와 오오누마 쿠루미와 와카자토 하루나의 생일입니다!");
+                            break;
+                        default:
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘 생일인 아이돌이 없습니다...");
+                            break;
+                    }
+                case "November":
+                    switch (dateParse[1])
+                    {
+                        case "1":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 한다 로코의 생일입니다!");
+                            break;
+                        case "3":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 이마이 카나와 아마가세 토우마의 생일입니다!");
+                            break;
+                        case "4":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 카자노 히오리의 생일입니다!");
+                            break;
+                        case "5":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 코세키 레이나의 생일입니다!");
+                            break;
+                        case "6":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 아리우라 칸나의 생일입니다!");
+                            break;
+                        case "7":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 미즈타니 에리와 카타기리 사나에와 아쿠노 히데오의 생일입니다!");
+                            break;
+                        case "9":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 쿠도 시노부의 생일입니다!");
+                            break;
+                        case "12":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 주니의 생일입니다!");
+                            break;
+                        case "13":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 호리 유코의 생일입니다!");
+                            break;
+                        case "16":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 야나세 미유키의 생일입니다!");
+                            break;
+                        case "18":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 나나오 유리코와 에토 미사키의 생일입니다!");
+                            break;
+                        case "19":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 나가토미 하스미의 생일입니다!");
+                            break;
+                        case "20":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 오오니시 유리코와 이수지의 생일입니다!");
+                            break;
+                        case "21":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 마츠오 치즈루와 허영주의 생일입니다!");
+                            break;
+                        case "22":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 사타케 미나코와 와타나베 미노리의 생일입니다!");
+                            break;
+                        case "23":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 나카노 유카와 이지원의 생일입니다!");
+                            break;
+                        case "25":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 타카츠키 야요이와 타카미네 노아와 오카무라 나오의 생일입니다!");
+                            break;
+                        case "27":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 사쿠라모리 카오리와 무라마츠 사쿠라의 생일입니다!");
+                            break;
+                        case "28":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 시라사카 코우메의 생일입니다!");
+                            break;
+                        case "30":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 후쿠다 노리코와 오오누마 쿠루미와 와카자토 하루나의 생일입니다!");
+                            break;
+                        default:
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘 생일인 아이돌이 없습니다...");
+                            break;
+                    }
+                case "December":
+                    switch (dateParse[1])
+                    {
+                        case "1":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 한다 로코의 생일입니다!");
+                            break;
+                        case "3":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 이마이 카나와 아마가세 토우마의 생일입니다!");
+                            break;
+                        case "4":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 카자노 히오리의 생일입니다!");
+                            break;
+                        case "5":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 코세키 레이나의 생일입니다!");
+                            break;
+                        case "6":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 아리우라 칸나의 생일입니다!");
+                            break;
+                        case "7":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 미즈타니 에리와 카타기리 사나에와 아쿠노 히데오의 생일입니다!");
+                            break;
+                        case "9":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 쿠도 시노부의 생일입니다!");
+                            break;
+                        case "12":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 주니의 생일입니다!");
+                            break;
+                        case "13":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 호리 유코의 생일입니다!");
+                            break;
+                        case "16":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 야나세 미유키의 생일입니다!");
+                            break;
+                        case "18":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 나나오 유리코와 에토 미사키의 생일입니다!");
+                            break;
+                        case "19":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 나가토미 하스미의 생일입니다!");
+                            break;
+                        case "20":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 오오니시 유리코와 이수지의 생일입니다!");
+                            break;
+                        case "21":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 마츠오 치즈루와 허영주의 생일입니다!");
+                            break;
+                        case "22":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 사타케 미나코와 와타나베 미노리의 생일입니다!");
+                            break;
+                        case "23":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 나카노 유카와 이지원의 생일입니다!");
+                            break;
+                        case "25":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 타카츠키 야요이와 타카미네 노아와 오카무라 나오의 생일입니다!");
+                            break;
+                        case "27":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 사쿠라모리 카오리와 무라마츠 사쿠라의 생일입니다!");
+                            break;
+                        case "28":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 시라사카 코우메의 생일입니다!");
+                            break;
+                        case "30":
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘은 후쿠다 노리코와 오오누마 쿠루미와 와카자토 하루나의 생일입니다!");
+                            break;
+                        default:
+                            client.SendMessage(arg.ChatMessage.Channel, "오늘 생일인 아이돌이 없습니다...");
+                            break;
+                    }
+                default:
+                    break;
+            }
+            return;
+
         }
     }
 }
