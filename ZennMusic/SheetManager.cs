@@ -14,15 +14,17 @@ namespace ZennMusic
     {
         private static readonly string[] Scopes = { SheetsService.Scope.Spreadsheets };
 
-        public static string SpreadSheetId = "1XuWOrZ1rA-7O5RAFKvJ__wIue4u_WTRyyOZpFXIP7Ko";
+        public static string PieceSpreadSheetId = "1XuWOrZ1rA-7O5RAFKvJ__wIue4u_WTRyyOZpFXIP7Ko";
+        public static string IdolInfoSpreadSheetId = "1KPY7FuiHV9fwLdgPgVCUkP1z5v2EWpb4u7sia9YFovk";
         public static SheetsService Service { get; private set; }
         public static IList<IList<object>> PieceSheet => LoadPieceSheet();
         public static IList<object> NullNameSheet => LoadNullNameSheet();
+        public static IList<IList<object>> IdolInfoSheet => LoadIdolInfoSheet();
 
         public static void InitializeSheet()
         {
 #if DEBUG
-            SpreadSheetId = "1fndP3ddyqehCIn6vcpEiZOOixzYN6MX8puCnLdOIqgM";
+            PieceSpreadSheetId = "1fndP3ddyqehCIn6vcpEiZOOixzYN6MX8puCnLdOIqgM";
 #endif
             LogManager.Log("[Sheet System Initialize] Start");
             UserCredential credential;
@@ -55,10 +57,10 @@ namespace ZennMusic
             if(Service is null)
                 InitializeSheet();
 
-            const string range = "시트1!B6:E";
+            const string range = "통합1!B6:E";
 
             LogManager.Log("[Load Sheet] Google docs api execute");
-            var req = Service.Spreadsheets.Values.Get(SpreadSheetId, range);
+            var req = Service.Spreadsheets.Values.Get(PieceSpreadSheetId, range);
             var res = req.Execute().Values;
 
             foreach (var row in res)
@@ -86,13 +88,30 @@ namespace ZennMusic
             const string range = "시트1!J6:J";
 
             LogManager.Log("[Load Nullname Sheet] Google docs api execute");
-            var req = Service.Spreadsheets.Values.Get(SpreadSheetId, range);
+            var req = Service.Spreadsheets.Values.Get(PieceSpreadSheetId, range);
 
             var res = req.Execute().Values ?? new List<IList<object>>();
             var finalRes = res.Select(x => x.Count > 0 ? x[0] : string.Empty).ToList();
 
             LogManager.Log("[Load Nullname Sheet] Complete");
             return finalRes;
+        }
+
+        private static IList<IList<object>> LoadIdolInfoSheet()
+        {
+            LogManager.Log("[Load Sheet] Start");
+
+            if (Service is null)
+                InitializeSheet();
+
+            const string range = "통합!A2:K";
+
+            LogManager.Log("[Load Sheet] Google docs api execute");
+            var req = Service.Spreadsheets.Values.Get(IdolInfoSpreadSheetId, range);
+            var res = req.Execute().Values;
+
+            LogManager.Log("[Load Sheet] Complete");
+            return res;
         }
     }
 }

@@ -84,7 +84,7 @@ namespace ZennMusic
             var dialog = new SheetIdChangeDialog();
             if (dialog.ShowDialog() == true)
             {
-                SheetManager.SpreadSheetId = dialog.ResponseText;
+                SheetManager.PieceSpreadSheetId = dialog.ResponseText;
                 LogManager.Log($"[Change Sheet] Data : {dialog.ResponseText}");
             }
             LogManager.Log("[Change Sheet] Complete");
@@ -161,7 +161,7 @@ namespace ZennMusic
                 }
             };
 
-            var req = SheetManager.Service.Spreadsheets.Values.Update(body, SheetManager.SpreadSheetId, range);
+            var req = SheetManager.Service.Spreadsheets.Values.Update(body, SheetManager.PieceSpreadSheetId, range);
             req.ValueInputOption = SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.USERENTERED;
             LogManager.Log("[Refund Song] Google docs api request executed");
             req.Execute();
@@ -179,42 +179,6 @@ namespace ZennMusic
         {
             LogManager.Log("[Request Toggle] Off");
             ChatManager.IsRequestAvailable = false;
-        }
-
-        private void ButtonBase_OnClick2(object sender, RoutedEventArgs e)
-        {
-            for (var i = 1; i < 11; i++)
-            {
-                ChatManager.OnMessageReceived(null, new OnMessageReceivedArgs()
-                {
-                    ChatMessage = new ChatMessage(
-                        null,
-                        null,
-                        $"username{i}",
-                        $"Nick{i}",
-                        null,
-                        System.Drawing.Color.Aqua,
-                        new EmoteSet("produc1Keut", "produc1Keut"),
-                        "produc1Keut",
-                        UserType.Viewer,
-                        null,
-                        null,
-                        true,
-                        5,
-                        null,
-                        false,
-                        false,
-                        false,
-                        false,
-                        Noisy.NotSet,
-                        null,
-                        null,
-                        null,
-                        null,
-                        0,
-                        0)
-                });
-            }
         }
 
         private void Window_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)

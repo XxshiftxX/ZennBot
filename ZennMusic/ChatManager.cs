@@ -8,6 +8,7 @@ using System.Text;
 using System.Windows;
 using Google.Apis.Sheets.v4;
 using Google.Apis.Sheets.v4.Data;
+using Newtonsoft.Json.Linq;
 using TwitchLib.Api;
 using TwitchLib.Client;
 using TwitchLib.Client.Events;
@@ -19,7 +20,7 @@ namespace ZennMusic
     {
         private static readonly TwitchClient client = new TwitchClient();
         private static readonly TwitchAPI api = new TwitchAPI();
-        private static readonly string[] ManagerNameList = { "producerzenn", "qjfrntop", "freewing8101", "flashman0509", "mohamgwa1" };
+        private static string[] ManagerNameList = { "producerzenn", "qjfrntop", "freewing8101", "flashman0509", "mohamgwa1" };
         private static readonly Dictionary<string, Action<OnMessageReceivedArgs, string[]>> Commands =
             new Dictionary<string, Action<OnMessageReceivedArgs, string[]>>();
         public static readonly ObservableCollection<SongRequest> SongList = new ObservableCollection<SongRequest>();
@@ -31,21 +32,21 @@ namespace ZennMusic
         public static void InitializeChatManager()
         {
             var currentPath = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location) ?? "D:\\";
-            var filePath = Path.Combine(currentPath, "data.txt");
-            var fileRaw = File.ReadAllText(filePath);
-            var decoded = Convert.FromBase64String(fileRaw);
-            var data = Encoding.UTF8.GetString(decoded).Split('|').Select(x => new string(x.Reverse().ToArray())).ToArray();
+            var filePath = Path.Combine(currentPath, "config.json");
+            var config = JObject.Parse(File.ReadAllText(filePath));
 
-            var botId = data[0];
-            var botToken = data[1];
+            var botId = config["BotId"].Value<string>();
+            var botToken = config["BotToken"].Value<string>();
 
-            api.Settings.ClientId = data[2];
-            api.Settings.AccessToken = data[3];
-            api.Settings.Secret = data[4];
+            api.Settings.ClientId = config["ClientId"].Value<string>();
+            api.Settings.AccessToken = config["AccessToken"].Value<string>();
+            api.Settings.Secret = config["Secret"].Value<string>();
+
+            ManagerNameList = config["Managers"].Value<JArray>().Select(x => x.Value<string>()).ToArray();
 
             var credentials = new ConnectionCredentials(botId, botToken);
 
-            client.Initialize(credentials, "qjfrntop");
+            client.Initialize(credentials, "producerzenn");
 
             client.OnError += (sender, e) => Console.WriteLine($@"[ERROR] {e.Exception}");
             client.OnMessageReceived += OnMessageReceived;
@@ -70,9 +71,16 @@ namespace ZennMusic
         public static void OnMessageReceived(object sender, OnMessageReceivedArgs args)
         {
             LogManager.Log($"[Chat Event] ({args.ChatMessage.DisplayName}) {args.ChatMessage.Message}");
-            if (args.ChatMessage.Message.Split()[0] == "=젠")
+            if (args.ChatMessage.Message.Split()[0] == "!아이돌")
+            {
+                var commandArgs = args.ChatMessage.Message.Split().Skip(1).ToArray();
+
+                GetIdolInfo(args, commandArgs);
+            }
+            else if (args.ChatMessage.Message.Split()[0] == "=젠")
             {
                 LogManager.Log("[Chat Event] Command prefix detected");
+
                 var commandArgs = args.ChatMessage.Message.Split().Skip(1).ToArray();
 
                 if (!Commands.ContainsKey(commandArgs[0]))
@@ -127,7 +135,7 @@ namespace ZennMusic
                 Values = nullData.Select(x => new List<object> { x } as IList<object>).ToList()
             };
 
-            var nullRequest = SheetManager.Service.Spreadsheets.Values.Update(nullBody, SheetManager.SpreadSheetId,
+            var nullRequest = SheetManager.Service.Spreadsheets.Values.Update(nullBody, SheetManager.PieceSpreadSheetId,
                 "시트1!J6");
             nullRequest.ValueInputOption = SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.USERENTERED;
             LogManager.Log("[Null Name] Google docs api request executed");
@@ -231,7 +239,7 @@ namespace ZennMusic
                 }
             };
 
-            var req = SheetManager.Service.Spreadsheets.Values.Update(body, SheetManager.SpreadSheetId, range);
+            var req = SheetManager.Service.Spreadsheets.Values.Update(body, SheetManager.PieceSpreadSheetId, range);
             req.ValueInputOption = SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.USERENTERED;
             LogManager.Log("[Pay Piece] Google docs api request executed");
             req.Execute();
@@ -322,7 +330,7 @@ namespace ZennMusic
 
             var range = $"시트1!B{pieceData.ToList().FindIndex(x => x[0] as string == args.ChatMessage.DisplayName) + 6}";
 
-            var req = SheetManager.Service.Spreadsheets.Values.Update(body, SheetManager.SpreadSheetId, range);
+            var req = SheetManager.Service.Spreadsheets.Values.Update(body, SheetManager.PieceSpreadSheetId, range);
             req.ValueInputOption = SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.USERENTERED;
             LogManager.Log("[Request Song] Google docs api executed");
             req.Execute();
@@ -368,7 +376,7 @@ namespace ZennMusic
 
                 var body = new ValueRange { Values = pieceData };
 
-                var req = SheetManager.Service.Spreadsheets.Values.Update(body, SheetManager.SpreadSheetId, "시트1!B6");
+                var req = SheetManager.Service.Spreadsheets.Values.Update(body, SheetManager.PieceSpreadSheetId, "시트1!B6");
                 req.ValueInputOption = SpreadsheetsResource.ValuesResource.UpdateRequest.ValueInputOptionEnum.USERENTERED;
                 LogManager.Log("[Check Attendance] Google docs api executed");
                 req.Execute();
@@ -378,6 +386,7 @@ namespace ZennMusic
             }
         }
 
+        // =젠 곡(0)
         private static void ChackSong(OnMessageReceivedArgs arg, string[] cmdarg)
         {
             var request = SongList.FirstOrDefault(x => x.UserName == arg.ChatMessage.DisplayName);
@@ -389,6 +398,78 @@ namespace ZennMusic
             }
 
             client.SendMessage(arg.ChatMessage.Channel, $"{arg.ChatMessage.DisplayName}님의 신청곡은 현재 {SongList.IndexOf(request) + 1}번째에 있습니다! ({request.SongName})");
+        }
+
+        // =젠 아이돌(0)
+        private static void GetIdolInfo(OnMessageReceivedArgs arg, string[] cmdarg)
+        {
+            // 시노미야 카렌 / 16세 / 도쿄 출신 / 159cm, 48kg / AB형 / 90-59-90 / 엔젤 타입 / CV.콘도 유이 / (설명)
+            var req = SheetManager.IdolInfoSheet;
+
+            if (req == null)
+            {
+                client.SendMessage(arg.ChatMessage.Channel, "아이돌 정보 DB가 비어있어요!");
+                return;
+            }
+
+            var selected = req[new Random().Next(req.Count)];
+
+            var res = new List<string>();
+            for (var i = 0; i < selected.Count; i++)
+            {
+                if (selected[i] == null || selected[i] as string == string.Empty)
+                    continue;
+
+                switch (i)
+                {
+                    case 1:
+                        res[0] += ($" ({selected[i] as string} 프로)");
+                        break;
+                    case 2:
+                        res.Add($"{selected[i] as string}세");
+                        break;
+                    case 3:
+                        res.Add($"{selected[i] as string} 출신");
+                        break;
+                    case 4:
+                        if (selected[i] as string == "(불명)")
+                        {
+                            if (selected[i + 1] as string == "(불명)")
+                            {
+                                res.Add("신장, 체중 불명");
+                            }
+                            else
+                            {
+                                res.Add($"{selected[i] as string}cm / 체중 불명");
+                            }
+                        }
+                        else if (selected[i + 1] as string == "(불명)")
+                        {
+                            res.Add($"{selected[i] as string}kg / 신장 불명");
+                        }
+                        else
+                        {
+                            res.Add($"{selected[i] as string}cm / {selected[i + 1] as string}kg");
+                        }
+                        break;
+                    case 5:
+                        continue;
+                    case 6:
+                        res.Add($"{selected[i] as string}형");
+                        break;
+                    case 8:
+                        res.Add($"{selected[i] as string} 타입");
+                        break;
+                    case 9:
+                        res.Add($"CV. {selected[i] as string}");
+                        break;
+                    default:
+                        res.Add(selected[i] as string);
+                        break;
+                }
+            }
+
+            client.SendMessage(arg.ChatMessage.Channel, string.Join(" / ", res));
         }
     }
 }
